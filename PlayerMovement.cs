@@ -31,6 +31,13 @@ public class PlayerMovement : MonoBehaviour
     private float ypos;
     private bool canJump;
     public Animation animationController;
+    private float zPos;
+   // private bool isSliding=false;
+   // private bool canSlide=true;
+    //public float slideAgression;
+   // public float xRotation;
+   // public bool stopSlidingPhase=false;
+   // bool stopSlidingPhase2= false;
     //public float jumpSpeed;
     
     //Vector3 verticalTargetPosition;
@@ -38,10 +45,12 @@ public class PlayerMovement : MonoBehaviour
     
     
     void Start()
-    {
+    {   
         rb = GetComponent<Rigidbody>();
         xPos=rb.position.x;
         ypos=rb.position.y;
+        zPos= rb.position.z;
+        //xRotation=transform.rotation.x;
         
         //rb.AddForce(Vector3.forward*movementFactor*Time.fixedDeltaTime,ForceMode.Force);
         //movementFactor=700f;
@@ -54,7 +63,8 @@ public class PlayerMovement : MonoBehaviour
 
 
         GetInput();
-        Debug.Log(rb.velocity);
+       // Debug.Log(rb.velocity);
+       // Debug.Log(Mathf.Sin(Time.time));
         //Debug.Log(Time.time);
         //predictedPosition=transform.localPosition+rb.velocity*Time.deltaTime;
         //Debug.Log(transform.localPosition.z-rb.velocity.z*Time.time);//alınan toplam yol
@@ -65,43 +75,85 @@ public class PlayerMovement : MonoBehaviour
         
         //ControlSideMovement();
 
-        
-        
+    /*    if (isSliding)//&&transform.rotation.x!=-56)
+        {   
+            xRotation= Mathf.MoveTowards(xRotation,-90,slideAgression * Time.deltaTime);
+            transform.rotation= Quaternion.Euler(xRotation,0,0);
+            //Debug.Log("dönüyom aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-    }
-
-    
-
-    private void FixedUpdate() {
-        
-        
-        
-        rb.AddForce(Vector3.forward*Time.fixedDeltaTime*playerSpeed,ForceMode.VelocityChange);
-        RBControlSideMovement();
-
-        rb.drag= rb.drag- rb.drag*Time.fixedDeltaTime*0.001f*acceleration;
-
-
-        if (isJumping&&canJump)
-        {
-            //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
-            if (rb.position.y<2)
-            {   
-                rb.AddForce(Vector3.up*Time.deltaTime*jumpDistance,ForceMode.VelocityChange);
+            if (transform.rotation == Quaternion.Euler(-90,0,0))
+            {
+                stopSlidingPhase=true;
+                isSliding=false;
             }
-            isJumping=false;
+            
             
         }
 
+        if (stopSlidingPhase)
+        {   
+            
+            xRotation= Mathf.MoveTowards(xRotation,-60,100 * Time.deltaTime);
+            transform.rotation= Quaternion.Euler(xRotation,0,0);
+            
+
+        }
+
+        if (transform.rotation==Quaternion.Euler(-60,0,0)){
+
+            stopSlidingPhase2=true;
+        }
+            if (stopSlidingPhase2)
+            {   
+                stopSlidingPhase=false;
+                Debug.Log("hocam kalkıyorum");
+                //slideAgression=200;
+                xRotation= Mathf.MoveTowards(xRotation,0,slideAgression * Time.deltaTime);
+                transform.rotation= Quaternion.Euler(xRotation,0,0);
+                
+
+            }
+            if (transform.rotation == Quaternion.Euler(0,0,0))
+            {
+                    stopSlidingPhase2=false;
+            }
+
+
+        if (!stopSlidingPhase&&!isSliding&&!isJumping)
+        {
+            //animationController.CrossFade("run@loop");
+        }*/
         
 
-
-           
-               
-
+        
+        
 
     }
+
     
+
+    private void FixedUpdate()
+    {
+
+
+
+        //rb.AddForce(Vector3.forward * Time.fixedDeltaTime * playerSpeed, ForceMode.VelocityChange);
+        RBControlSideMovement();
+
+        rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
+
+        Jump();
+
+        //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
+        //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
+
+        rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
+
+        
+
+    }
+
+
 
     private void LateUpdate() {
         
@@ -146,6 +198,20 @@ public class PlayerMovement : MonoBehaviour
             
             animationController.CrossFade("jump");
         }
+
+        /*
+        if (Input.GetKeyDown(KeyCode.DownArrow)&&canSlide)
+        {   
+            
+            isSliding=true;
+            animationController.CrossFade("damage",2f);
+            animationController.CrossFade("run@loop");
+            // x 'i - 56 derece döndürecen
+
+            
+            
+        }*/
+
     }
 
 
@@ -210,6 +276,20 @@ public class PlayerMovement : MonoBehaviour
 
                 return;
             }
+        }
+    }
+
+    private void Jump()
+    {
+        if (isJumping && canJump)
+        {
+            //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
+            if (rb.position.y < 2)
+            {
+                rb.AddForce(Vector3.up * Time.deltaTime * jumpDistance, ForceMode.VelocityChange);
+            }
+            isJumping = false;
+
         }
     }
 
