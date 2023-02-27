@@ -26,6 +26,13 @@ public class PlayerMovement : MonoBehaviour
     float xPos;
     [Header("Change rate of velocity over time")]
     public float acceleration;
+    private bool isJumping=false;
+    public float jumpDistance;
+    private float ypos;
+    private bool canJump;
+    public Animation animationController;
+    //public float jumpSpeed;
+    
     //Vector3 verticalTargetPosition;
 
     
@@ -34,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         xPos=rb.position.x;
-        
+        ypos=rb.position.y;
         
         //rb.AddForce(Vector3.forward*movementFactor*Time.fixedDeltaTime,ForceMode.Force);
         //movementFactor=700f;
@@ -74,6 +81,18 @@ public class PlayerMovement : MonoBehaviour
 
         rb.drag= rb.drag- rb.drag*Time.fixedDeltaTime*0.001f*acceleration;
 
+
+        if (isJumping&&canJump)
+        {
+            //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
+            if (rb.position.y<2)
+            {   
+                rb.AddForce(Vector3.up*Time.deltaTime*jumpDistance,ForceMode.VelocityChange);
+            }
+            isJumping=false;
+            
+        }
+
         
 
 
@@ -82,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     }
+    
 
     private void LateUpdate() {
         
@@ -117,6 +137,14 @@ public class PlayerMovement : MonoBehaviour
             isTurningRight=false;
             
         }
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.UpArrow)&&canJump)
+        {
+            isJumping= true;
+            
+            animationController.CrossFade("jump");
         }
     }
 
@@ -183,6 +211,23 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
         }
+    }
+
+    private void OnCollisionEnter(Collision other) {
+        if (other.gameObject.tag=="Ground")
+        {   
+            canJump=true;
+            animationController.CrossFade("run@loop");
+        }
+
+        else
+        {
+            canJump=false;
+        }
+    }
+
+    private void OnCollisionExit(Collision other) {
+        canJump=false;
     }
 
 
