@@ -67,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         GetInput();
-        Debug.Log(rb.velocity);
+        //Debug.Log(rb.velocity);
         
        // Debug.Log(Mathf.Sin(Time.time));
         //Debug.Log(Time.time);
@@ -75,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(transform.localPosition.z-rb.velocity.z*Time.time);//alınan toplam yol
         //Debug.Log(transform.forward);
         //Debug.Log(rb.GetPointVelocity(transform.localPosition));
+        //Debug.Log(transform.position.x);
 
         //rb.velocity = new Vector3(0, 0, playerSpeed);
         
@@ -140,15 +141,18 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
+        RBControlSideMovement();
         
 
 
         //rb.AddForce(Vector3.forward * Time.fixedDeltaTime * playerSpeed, ForceMode.VelocityChange);
-        RBControlSideMovement();
+        
 
         //rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
 
         Jump();
+
+        
 
         //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
         //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
@@ -205,6 +209,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isJumping= true;
             
+            isChangingLane=false;
             animationController.CrossFade("jump");
         }
 
@@ -226,6 +231,8 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+
+
     private void RBControlSideMovement()
     {
         if (isTurningRight)
@@ -238,7 +245,7 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (rb.position.x != (currentLane +1)*laneDistance)
+            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f))//rb.position.x != (currentLane +1)*laneDistance
             { 
 
                 xDesiredPos=(currentLane +1)*laneDistance;
@@ -246,6 +253,11 @@ public class PlayerMovement : MonoBehaviour
                 
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
                 rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
+
+                
+                
+
+                
                                    
 
             }
@@ -254,11 +266,12 @@ public class PlayerMovement : MonoBehaviour
                 isTurningRight = false;
                 isChangingLane=false;
                 currentLane++;
-                rb.constraints=RigidbodyConstraints.FreezeRotation;
-                rb.constraints=RigidbodyConstraints.FreezePositionX;
+                //rb.constraints=RigidbodyConstraints.FreezeRotation;
+                //rb.constraints=RigidbodyConstraints.FreezePositionX;
 
                 return;
             }
+            
         }
 
 
@@ -272,7 +285,7 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (rb.position.x != (currentLane-1)*laneDistance)
+            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f))//rb.position.x != (currentLane-1)*laneDistance
             {
                 xDesiredPos=(currentLane -1)*laneDistance;
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
@@ -305,7 +318,8 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(Vector3.up * Time.deltaTime * jumpDistance, ForceMode.VelocityChange);
             }
             isJumping = false;
-
+            
+            
         }
     }
 
@@ -353,6 +367,11 @@ public class PlayerMovement : MonoBehaviour
         return rb.velocity.z*velocityXZ+ velocityY;//ilk çarpan yok
 
     }
+
+    public bool IsBetween(float testValue, float bound1, float bound2)
+     {
+        return (testValue >= Mathf.Min(bound1,bound2) && testValue <= Mathf.Max(bound1,bound2));
+     }
 
 
 
