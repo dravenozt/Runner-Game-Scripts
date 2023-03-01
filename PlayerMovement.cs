@@ -160,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
 
         
         
-        //rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
+        rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
 
         
 

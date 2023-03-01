@@ -31,6 +31,7 @@ public float overshootYaxis;
 private GameObject tavan;
 
 
+
 private void Start() {
     pm=GetComponentInParent<PlayerMovement>();
     GetClosestCeilingAhead();
@@ -56,10 +57,10 @@ private void Update() {
 
 
 private void LateUpdate() {
-    if (grappling)
+    /*if (grappling)
     {
         lineRenderer.SetPosition(0,gunTip.position);
-    }
+    }*/
 }
 
 
@@ -90,8 +91,8 @@ void StartGrapple(){
         Debug.Log("hocam bişeye tutturamadık valla");
         Invoke(nameof(StopGrapple),grappleDelayTime);
     }
-    lineRenderer.enabled=true;
-    lineRenderer.SetPosition(1,grapplePoint);
+    //lineRenderer.enabled=true;
+    //lineRenderer.SetPosition(1,grapplePoint);
 }
 
 void ExecuteGrapple(){
@@ -112,7 +113,7 @@ void ExecuteGrapple(){
 void StopGrapple(){
     grappling= false;
     grapplingCDtimer=grapplingCD;
-    lineRenderer.enabled=false;
+    //lineRenderer.enabled=false;
 
 
     pm.activeGrapple=false;
@@ -168,5 +169,14 @@ private Vector3 GetDirection(){
     }
 }
 
+    public Vector3 GetGrapplePoint()
+    {
+        return grapplePoint;
+    }
+
+        public bool IsGrappling()
+    {
+        return grappling;
+    }
 
 }
