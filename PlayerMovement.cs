@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     //public float sideMovementFactor;
     private bool isTurningRight=false;
     private bool isTurningLeft=false;
-    private bool isChangingLane=false;
+    public bool isChangingLane=false;
 
     public int currentLane=1;
     [Header("PlayerSpeed")]
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     float xPos;
     [Header("Change rate of velocity over time")]
     public float acceleration;
-    private bool isJumping=false;
+    public bool isJumping=false;
     public float jumpDistance;
     private float ypos;
     public bool canJump;
@@ -67,7 +67,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         GetInput();
-       // Debug.Log(rb.velocity);
+        Debug.Log(rb.velocity);
+        
        // Debug.Log(Mathf.Sin(Time.time));
         //Debug.Log(Time.time);
         //predictedPosition=transform.localPosition+rb.velocity*Time.deltaTime;
@@ -139,10 +140,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
-        if (activeGrapple)
-        {
-            return;
-        }
+        
 
 
         //rb.AddForce(Vector3.forward * Time.fixedDeltaTime * playerSpeed, ForceMode.VelocityChange);
@@ -154,7 +152,10 @@ public class PlayerMovement : MonoBehaviour
 
         //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
         //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
+        
 
+        
+        
         //rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
 
         
@@ -244,7 +245,8 @@ public class PlayerMovement : MonoBehaviour
                 
                 
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
-                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));                       
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
+                                   
 
             }
             else
@@ -252,6 +254,8 @@ public class PlayerMovement : MonoBehaviour
                 isTurningRight = false;
                 isChangingLane=false;
                 currentLane++;
+                rb.constraints=RigidbodyConstraints.FreezeRotation;
+                rb.constraints=RigidbodyConstraints.FreezePositionX;
 
                 return;
             }
@@ -274,6 +278,7 @@ public class PlayerMovement : MonoBehaviour
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
                 rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
                 
+                
 
             }
             else
@@ -281,6 +286,8 @@ public class PlayerMovement : MonoBehaviour
                 isChangingLane=false;
                 isTurningLeft = false;
                 currentLane--;
+                
+                
 
                 return;
             }
@@ -290,7 +297,8 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         if (isJumping && canJump)
-        {
+        {   
+            
             //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
             if (rb.position.y < 2)
             {
@@ -337,12 +345,12 @@ public class PlayerMovement : MonoBehaviour
         float gravity= Physics.gravity.y;
         float displacementY= endPoint.y-startPoint.y;
 
-        Vector3 displacementXZ = new Vector3(endPoint.x-startPoint.x,0f,endPoint.z-startPoint.z);
+        Vector3 displacementXZ = new Vector3(endPoint.x-startPoint.x,0f,endPoint.z-startPoint.z);//endPoint.x-startPoint.x vector3 ün asıl değeri
 
-        Vector3 velocityY= Vector3.up*Mathf.Sqrt(-2*gravity*trajectoryHeight);
+        Vector3 velocityY= Vector3.up*Mathf.Sqrt(-2*gravity*trajectoryHeight)*0.8f;// sonradan eklediğim çarpanlar aslında yok
         Vector3 velocityXZ= displacementXZ/(Mathf.Sqrt(-2*trajectoryHeight/gravity)+ Mathf.Sqrt(2*(displacementY-trajectoryHeight)/gravity));
 
-        return velocityXZ+ velocityY;
+        return rb.velocity.z*velocityXZ+ velocityY;//ilk çarpan yok
 
     }
 

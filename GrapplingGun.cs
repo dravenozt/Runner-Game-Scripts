@@ -95,16 +95,17 @@ void StartGrapple(){
 }
 
 void ExecuteGrapple(){
-    Vector3 lowestPoint= new Vector3(transform.position.x,transform.position.y-1f,transform.position.z);
+    Vector3 lowestPoint= new Vector3(transform.position.x,transform.position.y-1f,transform.position.z);//-1f normali
 
-    float grapplePointRelativeYPos= grapplePoint.y-lowestPoint.y;
+    float grapplePointRelativeYPos= grapplePoint.y-lowestPoint.y;//herhangi bi değer çıkarma yok lowest point harici
     float highestPointOnArc=grapplePointRelativeYPos+overshootYaxis;
 
     if (grapplePointRelativeYPos<0)
     {
         highestPointOnArc=overshootYaxis;
     }
-    pm.JumpToPosition(grapplePoint,highestPointOnArc);
+    Vector3 somevector= new Vector3(0,1,0);
+    pm.JumpToPosition(grapplePoint,highestPointOnArc);//grapple pointe atlayacak
     Invoke(nameof(StopGrapple),1f);
 }
 
@@ -112,14 +113,19 @@ void StopGrapple(){
     grappling= false;
     grapplingCDtimer=grapplingCD;
     lineRenderer.enabled=false;
+
+
+    pm.activeGrapple=false;
 }
 
 
 
 private Vector3 FindDirectionVector(Vector3 initialCoordinates,Vector3 targetCoordinates){
 
+    
     Vector3 directionVector= targetCoordinates-initialCoordinates;
-    return directionVector;
+    Vector3 xdirectionVector = new Vector3(directionVector.x,0,0);
+    return directionVector-xdirectionVector;
 }
 
 //find closest ceiling
