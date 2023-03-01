@@ -76,7 +76,18 @@ private void Update() {
     }*/
 }
 
+    private IEnumerator StartGrappleSequence(){
+        RaycastHit hit;
 
+        if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
+        {
+        animationController.CrossFade("attack_sword_01");
+        yield return new WaitForSeconds(0.2f);
+        StartGrapple();
+        animationController.CrossFade("sit_idle@loop");
+        }
+
+    }
 
 
 
@@ -129,6 +140,7 @@ void StopGrapple(){
     grappling= false;
     grapplingCDtimer=grapplingCD;
     //lineRenderer.enabled=false;
+    
 
 
     pm.activeGrapple=false;
@@ -195,11 +207,6 @@ private Vector3 GetDirection(){
     }
 
 
-    private IEnumerator StartGrappleSequence(){
-        animationController.CrossFade("attack_sword_01");
-        yield return new WaitForSeconds(0.2f);
-        StartGrapple();
-        animationController.CrossFade("sit_idle@loop");
-    }
+
 
 }
