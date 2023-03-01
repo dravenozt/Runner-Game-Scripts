@@ -29,9 +29,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isJumping=false;
     public float jumpDistance;
     private float ypos;
-    private bool canJump;
+    public bool canJump;
     public Animation animationController;
     private float zPos;
+    public bool activeGrapple;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -60,7 +61,10 @@ public class PlayerMovement : MonoBehaviour
     
     void Update()
     {
-
+        if (activeGrapple)
+        {
+            return;
+        }
 
         GetInput();
        // Debug.Log(rb.velocity);
@@ -135,19 +139,23 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
+        if (activeGrapple)
+        {
+            return;
+        }
 
 
         //rb.AddForce(Vector3.forward * Time.fixedDeltaTime * playerSpeed, ForceMode.VelocityChange);
         RBControlSideMovement();
 
-        rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
+        //rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
 
         Jump();
 
         //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
         //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
 
-        rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
+        //rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
 
         
 
@@ -161,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
-
+  
 
 
     
@@ -311,7 +319,32 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    private Vector3 velocityToSet;
+    private void SetVelocity(){
+        
+        rb.velocity=velocityToSet;
+    }
+    public void JumpToPosition(Vector3 targetPosition, float trajectoryHeight){
+        activeGrapple= true;
 
+        velocityToSet=CalculateJumpVelocity(transform.position,targetPosition,trajectoryHeight);
+
+        //rb.velocity= CalculateJumpVelocity(transform.position, targetPosition,trajectoryHeight);
+        Invoke(nameof(SetVelocity),0.1f);
+    }
+
+    public Vector3 CalculateJumpVelocity(Vector3 startPoint,Vector3 endPoint,float trajectoryHeight){
+        float gravity= Physics.gravity.y;
+        float displacementY= endPoint.y-startPoint.y;
+
+        Vector3 displacementXZ = new Vector3(endPoint.x-startPoint.x,0f,endPoint.z-startPoint.z);
+
+        Vector3 velocityY= Vector3.up*Mathf.Sqrt(-2*gravity*trajectoryHeight);
+        Vector3 velocityXZ= displacementXZ/(Mathf.Sqrt(-2*trajectoryHeight/gravity)+ Mathf.Sqrt(2*(displacementY-trajectoryHeight)/gravity));
+
+        return velocityXZ+ velocityY;
+
+    }
 
 
 
