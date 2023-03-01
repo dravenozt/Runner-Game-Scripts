@@ -24,11 +24,13 @@ private float grapplingCDtimer;
 
 public KeyCode grappleKey= KeyCode.DownArrow;
 
-private bool grappling;
+public bool grappling;
 public float overshootYaxis;
 
 //deneme
 private GameObject tavan;
+
+public Animation animationController;
 
 
 
@@ -40,12 +42,12 @@ private void Start() {
 
 private void Update() {
     if (Input.GetKeyDown(grappleKey))
-    {
-        StartGrapple();
-    }
+        {
+            StartGrappleWithAnim();
+        }
 
 
-    if (grapplingCDtimer>0)
+        if (grapplingCDtimer>0)
     {
         grapplingCDtimer -= Time.deltaTime;
     }
@@ -55,8 +57,19 @@ private void Update() {
     //Debug.Log(FindDirectionVector(transform.position,tavan.transform.position));
 }
 
+    private void StartGrappleWithAnim()
+    {   
+        if (grapplingCDtimer>0)
+    {
+        return;
+    }
 
-private void LateUpdate() {
+        StartCoroutine("StartGrappleSequence");
+        /*animationController.CrossFade("attack_sword_01");//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        Invoke("StartGrapple", 0.2f);//StartGrapple();*/
+    }
+
+    private void LateUpdate() {
     /*if (grappling)
     {
         lineRenderer.SetPosition(0,gunTip.position);
@@ -69,12 +82,11 @@ private void LateUpdate() {
 
 
 void StartGrapple(){
-    if (grapplingCDtimer>0)
-    {
-        return;
-    }
+    
 
     grappling= true;
+    
+
 
     RaycastHit hit;
 
@@ -91,11 +103,13 @@ void StartGrapple(){
         Debug.Log("hocam bişeye tutturamadık valla");
         Invoke(nameof(StopGrapple),grappleDelayTime);
     }
-    //lineRenderer.enabled=true;
-    //lineRenderer.SetPosition(1,grapplePoint);
+
 }
 
 void ExecuteGrapple(){
+    
+    
+    
     Vector3 lowestPoint= new Vector3(transform.position.x,transform.position.y-1f,transform.position.z);//-1f normali
 
     float grapplePointRelativeYPos= grapplePoint.y-lowestPoint.y;//herhangi bi değer çıkarma yok lowest point harici
@@ -111,6 +125,7 @@ void ExecuteGrapple(){
 }
 
 void StopGrapple(){
+    animationController.Blend("tumbling",1f);
     grappling= false;
     grapplingCDtimer=grapplingCD;
     //lineRenderer.enabled=false;
@@ -177,6 +192,14 @@ private Vector3 GetDirection(){
         public bool IsGrappling()
     {
         return grappling;
+    }
+
+
+    private IEnumerator StartGrappleSequence(){
+        animationController.CrossFade("attack_sword_01");
+        yield return new WaitForSeconds(0.2f);
+        StartGrapple();
+        animationController.CrossFade("sit_idle@loop");
     }
 
 }

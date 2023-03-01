@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     public Animation animationController;
     private float zPos;
     public bool activeGrapple;
+    public GrapplingGun grapplingGun;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -326,8 +327,11 @@ public class PlayerMovement : MonoBehaviour
     private void OnCollisionEnter(Collision other) {
         if (other.gameObject.tag=="Ground")
         {   
+            if (!grapplingGun.grappling)
+            {
             canJump=true;
             animationController.CrossFade("run@loop");
+            }
         }
 
         else
