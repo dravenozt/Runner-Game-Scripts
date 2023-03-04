@@ -196,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {   
             isChangingLane=true;
             isTurningLeft=true;
