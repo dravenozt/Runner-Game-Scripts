@@ -5,10 +5,14 @@ using UnityEngine;
 public class InfiniteMap : MonoBehaviour
 {
 
+    public GameObject player;
     public GameObject tile1;
     public GameObject baseTile;
     public GameObject leftLantern;
     public GameObject rightLantern;
+    public GameObject plane;
+    private float positionMultiplier=31f;
+    
     
 
     // Update is called once per frame
@@ -16,13 +20,61 @@ public class InfiniteMap : MonoBehaviour
 
     private void Start()
     {
+        GenerateMap();
+
+    }
+
+
+
+    void Update()
+    {
+        if (player.transform.position.z>positionMultiplier)
+        {
+            GenerateMap();
+            positionMultiplier +=31f;
+        }
+
+         
+
+    }
+
+    private void GenerateMap()
+    {
         SpawnPlatform();
         SpawnPlatform();
         SpawnPlatform();
         SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+
         SpawnBase();
         SpawnBase();
+        SpawnBase();
+        SpawnBase();
+        SpawnBase();
+        SpawnBase();
+
         SpawnLanterns();
+        SpawnLanterns();
+        SpawnLanterns();
+
+        
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        
+        
     }
 
     private void SpawnLanterns()
@@ -53,12 +105,11 @@ public class InfiniteMap : MonoBehaviour
         rightLantern = Instantiate(rightLantern, locRightLantern + Vector3.forward * 16f, Quaternion.identity);
     
     }
-    void Update()
-    {
-
-
-
+    private void SpawnPlane(){
+        Vector3 locPlane= new Vector3(plane.transform.position.x, plane.transform.position.y, plane.transform.position.z);
+        plane = Instantiate(plane, locPlane + Vector3.forward * 10f, Quaternion.identity);        
     }
+
 
 
 

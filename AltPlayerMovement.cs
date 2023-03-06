@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
-{   
+public class AltPlayerMovement : MonoBehaviour
+{
     [Header("Arrange the movement speed")]
     public float movementFactor;
     Rigidbody rb;
@@ -34,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     private float zPos;
     public bool activeGrapple;
     public GrapplingGun grapplingGun;
+    public Vector3 speed;
+    public float gravity= 12f;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -52,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
         xPos=rb.position.x;
         ypos=rb.position.y;
         zPos= rb.position.z;
+        speed= new Vector3(0,0,3f);
         //xRotation=transform.rotation.x;
         
         //rb.AddForce(Vector3.forward*movementFactor*Time.fixedDeltaTime,ForceMode.Force);
@@ -68,9 +71,22 @@ public class PlayerMovement : MonoBehaviour
         }
 
         GetInput();
-        Debug.Log(xPos);
-        
 
+        ControlSideMovement();
+        Jump();
+
+        //transform.position +=speed*Time.deltaTime;
+        
+        //speed.y-=gravity*Time.deltaTime;
+        //Debug.Log(rb.velocity);
+        
+       // Debug.Log(Mathf.Sin(Time.time));
+        //Debug.Log(Time.time);
+        //predictedPosition=transform.localPosition+rb.velocity*Time.deltaTime;
+        //Debug.Log(transform.localPosition.z-rb.velocity.z*Time.time);//alınan toplam yol
+        //Debug.Log(transform.forward);
+        //Debug.Log(rb.GetPointVelocity(transform.localPosition));
+        //Debug.Log(transform.position.x);
 
         //rb.velocity = new Vector3(0, 0, playerSpeed);
         
@@ -136,46 +152,32 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
-        RBControlSideMovement();
-
-        ConstraintXposition();
+        //RBControlSideMovement();
+        
+    
 
         //rb.AddForce(Vector3.forward * Time.fixedDeltaTime * playerSpeed, ForceMode.VelocityChange);
-
+        
 
         //rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
 
-        Jump();
-        rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
-        transform.position= rb.position;
+        //Jump();
 
-
+        
 
         //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
         //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
+        
 
+        
+        
+        rb.velocity= new Vector3(rb.velocity.x,rb.velocity.y,playerSpeed*Time.fixedDeltaTime);
 
-
-
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, playerSpeed * Time.fixedDeltaTime);
-
-
+        
 
     }
 
-    private void ConstraintXposition()
-    {
-        if (isChangingLane)
-        {
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
-            rb.freezeRotation = true;
-        }
-        else
-        {
-            rb.constraints = RigidbodyConstraints.FreezePositionX;
-            rb.freezeRotation = true;
-        }
-    }
+
 
     private void LateUpdate() {
         
@@ -254,17 +256,14 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f))//rb.position.x != (currentLane +1)*laneDistance //!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f)
+            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f))//rb.position.x != (currentLane +1)*laneDistance
             { 
 
                 xDesiredPos=(currentLane +1)*laneDistance;
                 
                 
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
-                
-                
-                //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
-                rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
 
                 
                 
@@ -277,9 +276,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 isTurningRight = false;
                 isChangingLane=false;
-                //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
                 currentLane++;
-
                 //rb.constraints=RigidbodyConstraints.FreezeRotation;
                 //rb.constraints=RigidbodyConstraints.FreezePositionX;
 
@@ -299,12 +296,11 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f))//rb.position.x != (currentLane-1)*laneDistance//!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f)
+            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f))//rb.position.x != (currentLane-1)*laneDistance
             {
                 xDesiredPos=(currentLane -1)*laneDistance;
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
-                //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
-                rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
                 
                 
 
@@ -313,7 +309,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 isChangingLane=false;
                 isTurningLeft = false;
-                
                 currentLane--;
                 
                 
@@ -323,21 +318,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Jump()
-    {
-        if (isJumping && canJump)
-        {   
-            
-            //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
-            if (rb.position.y < 2)
-            {
-                rb.AddForce(Vector3.up * Time.deltaTime * jumpDistance, ForceMode.VelocityChange);
-            }
-            isJumping = false;
-            
-            
-        }
-    }
 
     private void OnCollisionEnter(Collision other) {
        // if (other.gameObject.tag=="Ground")
@@ -347,6 +327,9 @@ public class PlayerMovement : MonoBehaviour
             canJump=true;
             animationController.CrossFade("run@loop");
             }
+
+
+
         //}
 
         /*else
@@ -356,10 +339,14 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnCollisionStay(Collision other) {
         canJump=true;
+        
     }
 
     private void OnCollisionExit(Collision other) {
         canJump=false;
+        
+
+
     }
 
 
@@ -368,6 +355,24 @@ public class PlayerMovement : MonoBehaviour
         
         rb.velocity=velocityToSet;
     }
+    private void Jump()
+    {
+        if (isJumping && canJump)
+        {   
+            
+           /* //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
+            if (rb.position.y < 2)
+            {
+                rb.AddForce(Vector3.up * Time.deltaTime * jumpDistance, ForceMode.VelocityChange);
+            }*/
+            JumpToPosition(transform.position+Vector3.forward*20,10f);
+            isJumping = false;
+            activeGrapple=false;
+            
+            
+        }
+    }
+
     public void JumpToPosition(Vector3 targetPosition, float trajectoryHeight){
         activeGrapple= true;
 
@@ -381,12 +386,12 @@ public class PlayerMovement : MonoBehaviour
         float gravity= Physics.gravity.y;
         float displacementY= endPoint.y-startPoint.y;
 
-        Vector3 displacementXZ = new Vector3(endPoint.x-startPoint.x,0f,endPoint.z-startPoint.z);//endPoint.x-startPoint.x vector3 ün asıl değeri
+        Vector3 displacementXZ = new Vector3(0,0f,endPoint.z-startPoint.z);//endPoint.x-startPoint.x vector3 ün asıl değeri
 
         Vector3 velocityY= Vector3.up*Mathf.Sqrt(-2*gravity*trajectoryHeight)*0.8f;// sonradan eklediğim çarpanlar aslında yok
         Vector3 velocityXZ= displacementXZ/(Mathf.Sqrt(-2*trajectoryHeight/gravity)+ Mathf.Sqrt(2*(displacementY-trajectoryHeight)/gravity));
 
-        return rb.velocity.z*velocityXZ+ velocityY;//ilk çarpan yok
+        return velocityXZ+ velocityY;//ilk çarpan yok rb.velocity.z///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     }
 
@@ -396,18 +401,6 @@ public class PlayerMovement : MonoBehaviour
      }
 
 
-
-
-
-
-
-
-
-
-//Control Side Movement works with transforms, but this causes movement problems, doesnt work with rigid body movement
-//from now on , we will work with RBControlSideMovement function
-
-/*
     private void ControlSideMovement()
     {
         if (isTurningRight)
@@ -420,13 +413,28 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (transform.position.x != (currentLane +1)*laneDistance)
-            {
-                targetPosition = new Vector3((currentLane+1)*laneDistance,transform.localPosition.y, transform.position.z ); 
-                transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+            if (transform.position.x!=(currentLane +1)*laneDistance)//rb.position.x != (currentLane +1)*laneDistance
+            { 
+                
+                xDesiredPos=(currentLane +1)*laneDistance;
+                
+                Vector3 targetPosition= new Vector3(xDesiredPos,transform.position.y,transform.position.z);
+                
+                transform.position=Vector3.MoveTowards(transform.position,targetPosition,laneChangeSpeed*Time.deltaTime);
+
                 
                 
+                //transform.position= new Vector3(currentPosition,transform.position.y,transform.position.z);
+
                 
+                //xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
+                //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
+
+                
+                
+
+                
+                                   
 
             }
             else
@@ -434,9 +442,12 @@ public class PlayerMovement : MonoBehaviour
                 isTurningRight = false;
                 isChangingLane=false;
                 currentLane++;
+                //rb.constraints=RigidbodyConstraints.FreezeRotation;
+                //rb.constraints=RigidbodyConstraints.FreezePositionX;
 
                 return;
             }
+            
         }
 
 
@@ -450,10 +461,19 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (transform.position.x != (currentLane-1)*laneDistance)
+            if (transform.position.x!=(currentLane -1)*laneDistance)//rb.position.x != (currentLane-1)*laneDistance
             {
-                targetPosition = new Vector3((currentLane-1)*laneDistance,transform.localPosition.y, transform.position.z);//transform.localPosition.y, transform.localPosition.z); //(currentLane + direction) * laneOffset
-                transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+                xDesiredPos=(currentLane -1)*laneDistance;
+                
+                
+                
+                Vector3 targetPosition= new Vector3(xDesiredPos,transform.position.y,transform.position.z);
+                
+                transform.position=Vector3.MoveTowards(transform.position,targetPosition,laneChangeSpeed*Time.deltaTime);
+                
+                //Mathf.MoveTowards(transform.position.x,xDesiredPos,laneChangeSpeed*Time.deltaTime);
+                //xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
+                //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
                 
                 
 
@@ -463,14 +483,12 @@ public class PlayerMovement : MonoBehaviour
                 isChangingLane=false;
                 isTurningLeft = false;
                 currentLane--;
+                
+                
 
                 return;
             }
         }
     }
 
-
-
-*/
-    
 }
