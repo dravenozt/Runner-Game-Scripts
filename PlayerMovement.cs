@@ -68,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         GetInput();
-        Debug.Log(xPos);
+        Debug.Log(rb.position);
         
 
 
@@ -147,6 +147,8 @@ public class PlayerMovement : MonoBehaviour
 
         Jump();
         rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+
+
         transform.position= rb.position;
 
 
@@ -159,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, playerSpeed * Time.fixedDeltaTime);
 
-
+        
 
     }
 
@@ -179,7 +181,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void LateUpdate() {
         
-
+        //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+        
         
     }
 
@@ -383,7 +386,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 displacementXZ = new Vector3(endPoint.x-startPoint.x,0f,endPoint.z-startPoint.z);//endPoint.x-startPoint.x vector3 ün asıl değeri
 
-        Vector3 velocityY= Vector3.up*Mathf.Sqrt(-2*gravity*trajectoryHeight)*0.8f;// sonradan eklediğim çarpanlar aslında yok
+        Vector3 velocityY= Vector3.up*Mathf.Sqrt(-2*gravity*trajectoryHeight)*1.5f;// sonradan eklediğim çarpanlar aslında yok(0.8f)
         Vector3 velocityXZ= displacementXZ/(Mathf.Sqrt(-2*trajectoryHeight/gravity)+ Mathf.Sqrt(2*(displacementY-trajectoryHeight)/gravity));
 
         return rb.velocity.z*velocityXZ+ velocityY;//ilk çarpan yok
