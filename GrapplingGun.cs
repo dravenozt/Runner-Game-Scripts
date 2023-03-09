@@ -106,6 +106,7 @@ void StartGrapple(){
         grapplePoint= hit.point;
 
         Invoke(nameof(ExecuteGrapple),grappleDelayTime);
+        hit.collider.enabled=false;///////////////////////////////////////////////////////////////////////////////////////////////////////////buraya iyi bakkkkkkkkk
     }
 
     else

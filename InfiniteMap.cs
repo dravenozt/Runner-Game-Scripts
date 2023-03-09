@@ -24,25 +24,21 @@ public class InfiniteMap : MonoBehaviour
 
 
     private void Start()
-    {   
-        locEmptyObject=new Vector3(0,0,0);
-        
-        
+    {
+        locEmptyObject = new Vector3(0, 0, 30);
+
+
         GenerateMap();
 
-        CombineObjects();
-        CombineObjects();
-        CombineObjects();
-        CombineObjects();
-        CombineObjects();
+        GenerateObstacles();
+        //CombineObjects();
+        //CombineObjects();
         //Debug.Log(GetPermutations(sayilar,2));
-        
-        
+
+
 
 
     }
-
-
 
     void Update()
     {
@@ -51,6 +47,7 @@ public class InfiniteMap : MonoBehaviour
         {   
             
                 GenerateMap();
+                GenerateObstacles();
                 positionMultiplier += 31f;
             
             
@@ -61,6 +58,21 @@ public class InfiniteMap : MonoBehaviour
         DestroyBehind();
 
     }
+
+    private void GenerateObstacles()
+    {   
+        if (Vector3.Distance(player.transform.position,locEmptyObject)<150f)
+        {
+        CombineObjects();
+        CombineObjects();
+        CombineObjects();
+        }
+        
+        
+        
+    }
+
+
 
     
     
@@ -76,9 +88,9 @@ public class InfiniteMap : MonoBehaviour
 
         GameObject emptyObject= Instantiate(gameObjectListWithEmpty[0],locEmptyObject,Quaternion.identity);
 
-        int range= 14;
+        int range= 23;
 
-        for (int i = 1; i < 5; i++){
+        for (int i = 1; i < 8; i++){
             int index=Random.Range(1,range);
             
             GameObject spawnedObject= Instantiate(gameObjectList[index],locEmptyObject,Quaternion.identity);

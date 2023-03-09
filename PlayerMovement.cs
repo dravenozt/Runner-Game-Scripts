@@ -77,19 +77,21 @@ public class PlayerMovement : MonoBehaviour
 
         GetInput();
         //Debug.Log(Physics.autoSyncTransforms);
-        Debug.Log(Time.time);
+        //Debug.Log(Time.time);
+        RBControlSideMovement();
         //Debug.Log(collisionTimer);
         //RBControlSideMovement();
         //transform.Translate(Vector3.forward*Time.deltaTime*playerSpeed);
 
         
-        /*if (collisionTimer>0.2)
+        if (collisionTimer>0.02)
         {   
-            
+            GetComponent<CapsuleCollider>().enabled=false;
+            rb.useGravity=false;
             GetComponent<PlayerMovement>().enabled=false;
             
             
-        }*/
+        }
         
 
 
@@ -157,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
-        RBControlSideMovement();
+        
         
 
         ConstraintXposition();
@@ -293,10 +295,10 @@ public class PlayerMovement : MonoBehaviour
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
                 
                 //Vector3 targetPosition=new Vector3(xDesiredPos,rb.position.y,rb.position.z);
-                //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
                 //rb.position= Vector3.SmoothDamp(rb.position,targetPosition,ref velocity,0.1f);
                 
-                rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+                //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
 
                 
                 
@@ -335,8 +337,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 xDesiredPos=(currentLane -1)*laneDistance;
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
-                //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
-                rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
+                //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
                 
                 
 
@@ -374,11 +376,13 @@ public class PlayerMovement : MonoBehaviour
     private void OnCollisionEnter(Collision other) {
        // if (other.gameObject.tag=="Ground")
         //{   
-            if (!grapplingGun.grappling)
+            if (!grapplingGun.grappling&&!cam.GetComponent<FollowCamera>().isDying&&other.gameObject.tag=="Ground")
             {
             canJump=true;
-            animationController.CrossFade("run@loop");
+            animationController.CrossFade(default);//"run@loop");
             }
+
+            
 
             //collisionTimer=0;
         //}
@@ -395,7 +399,20 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.tag=="ObstacleRoad")
         {
             
-            collisionTimer+=Time.deltaTime;
+            collisionTimer+=Time.deltaTime/2;
+
+            ////////////////////////Camera Shake
+            float x= Random.Range(-1f,1f);
+            float y= Random.Range(-1f,1f);
+
+            Vector3 camPos= transform.position+ cam.GetComponent<FollowCamera>().offSet.position;
+
+            cam.transform.position= camPos+new Vector3(x,y,0)*Time.deltaTime*shakeMagnitude;
+            //cam.transform.position= cam.GetComponent<FollowCamera>().offSet.transform.position+transform.position;
+
+
+            
+            //cam.GetComponent<FollowCamera>().offSet.transform.position+=Vector3.forward*collisionTimer*5;
             //cam.transform.position+=Vector3.forward*shakeMagnitude*Time.deltaTime;
 
             
@@ -407,6 +424,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionExit(Collision other) {
         canJump=false;
+        collisionTimer=0;
         //cam.transform.localPosition=camTransformHolder.transform.position;
     }
 
