@@ -34,6 +34,11 @@ public class PlayerMovement : MonoBehaviour
     private float zPos;
     public bool activeGrapple;
     public GrapplingGun grapplingGun;
+    public float collisionTimer=0;
+    public Camera cam;
+    public Transform camTransformHolder;
+    public float shakeMagnitude;
+    Vector3 velocity= Vector3.zero;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -48,10 +53,13 @@ public class PlayerMovement : MonoBehaviour
     
     void Start()
     {   
+        
+        //Physics.autoSyncTransforms=true;
         rb = GetComponent<Rigidbody>();
         xPos=rb.position.x;
         ypos=rb.position.y;
         zPos= rb.position.z;
+        
         //xRotation=transform.rotation.x;
         
         //rb.AddForce(Vector3.forward*movementFactor*Time.fixedDeltaTime,ForceMode.Force);
@@ -68,7 +76,20 @@ public class PlayerMovement : MonoBehaviour
         }
 
         GetInput();
-        Debug.Log(rb.position);
+        //Debug.Log(Physics.autoSyncTransforms);
+        Debug.Log(Time.time);
+        //Debug.Log(collisionTimer);
+        //RBControlSideMovement();
+        //transform.Translate(Vector3.forward*Time.deltaTime*playerSpeed);
+
+        
+        /*if (collisionTimer>0.2)
+        {   
+            
+            GetComponent<PlayerMovement>().enabled=false;
+            
+            
+        }*/
         
 
 
@@ -137,6 +158,7 @@ public class PlayerMovement : MonoBehaviour
     {
 
         RBControlSideMovement();
+        
 
         ConstraintXposition();
 
@@ -146,20 +168,25 @@ public class PlayerMovement : MonoBehaviour
         //rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
 
         Jump();
-        rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////şu ikisi aç kapa
+        //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
 
 
-        transform.position= rb.position;
+        //transform.position= rb.position;
 
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
         //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
 
 
 
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ileri hareket eden bu
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, playerSpeed * Time.fixedDeltaTime);
+
+
+        
 
         
 
@@ -181,7 +208,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void LateUpdate() {
         
-        //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
+        //ControlSideMovement();
         
         
     }
@@ -261,12 +288,14 @@ public class PlayerMovement : MonoBehaviour
             { 
 
                 xDesiredPos=(currentLane +1)*laneDistance;
-                
+                //rb.AddForce(Vector3.right,ForceMode.VelocityChange);
                 
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
                 
-                
+                //Vector3 targetPosition=new Vector3(xDesiredPos,rb.position.y,rb.position.z);
                 //rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
+                //rb.position= Vector3.SmoothDamp(rb.position,targetPosition,ref velocity,0.1f);
+                
                 rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
 
                 
@@ -350,6 +379,8 @@ public class PlayerMovement : MonoBehaviour
             canJump=true;
             animationController.CrossFade("run@loop");
             }
+
+            //collisionTimer=0;
         //}
 
         /*else
@@ -357,12 +388,26 @@ public class PlayerMovement : MonoBehaviour
             canJump=false;
         }*/
     }
+    
     private void OnCollisionStay(Collision other) {
         canJump=true;
+
+        if (other.gameObject.tag=="ObstacleRoad")
+        {
+            
+            collisionTimer+=Time.deltaTime;
+            //cam.transform.position+=Vector3.forward*shakeMagnitude*Time.deltaTime;
+
+            
+            //cam.transform.localPosition=camTransformHolder.transform.position;
+        }
+
+        
     }
 
     private void OnCollisionExit(Collision other) {
         canJump=false;
+        //cam.transform.localPosition=camTransformHolder.transform.position;
     }
 
 
@@ -410,7 +455,7 @@ public class PlayerMovement : MonoBehaviour
 //Control Side Movement works with transforms, but this causes movement problems, doesnt work with rigid body movement
 //from now on , we will work with RBControlSideMovement function
 
-/*
+
     private void ControlSideMovement()
     {
         if (isTurningRight)
@@ -423,10 +468,11 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (transform.position.x != (currentLane +1)*laneDistance)
+            if (transform.position.x < (currentLane +1)*laneDistance-0.1f)
             {
-                targetPosition = new Vector3((currentLane+1)*laneDistance,transform.localPosition.y, transform.position.z ); 
-                transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+                targetPosition = new Vector3((currentLane+1)*laneDistance,rb.position.y, rb.position.z ); 
+                
+                transform.localPosition = Vector3.Lerp(transform.localPosition,targetPosition,0.2f);//Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
                 
                 
                 
@@ -453,11 +499,12 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (transform.position.x != (currentLane-1)*laneDistance)
+            if (transform.position.x > (currentLane-1)*laneDistance+0.1f)
             {
                 targetPosition = new Vector3((currentLane-1)*laneDistance,transform.localPosition.y, transform.position.z);//transform.localPosition.y, transform.localPosition.z); //(currentLane + direction) * laneOffset
-                transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
-                
+                transform.localPosition =Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+                //rb.position = Vector3.SmoothDamp(rb.position,targetPosition,ref velocity,0.1f);
+                //transform.localPosition = Vector3.Lerp(transform.localPosition,targetPosition,0.2f);
                 
 
             }
@@ -474,6 +521,6 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-*/
+
     
 }

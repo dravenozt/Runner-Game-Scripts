@@ -14,6 +14,9 @@ public class InfiniteMap : MonoBehaviour
     public GameObject plane;
     private float positionMultiplier=31f;
     public GameObject[] obstacles;
+    public GameObject[] gameObjectListWithEmpty;
+    Vector3 locEmptyObject;
+    public int[] sayilar;
     
     
 
@@ -21,10 +24,20 @@ public class InfiniteMap : MonoBehaviour
 
 
     private void Start()
-    {
-        GenerateMap();
+    {   
+        locEmptyObject=new Vector3(0,0,0);
         
+        
+        GenerateMap();
 
+        CombineObjects();
+        CombineObjects();
+        CombineObjects();
+        CombineObjects();
+        CombineObjects();
+        //Debug.Log(GetPermutations(sayilar,2));
+        
+        
 
 
     }
@@ -49,6 +62,53 @@ public class InfiniteMap : MonoBehaviour
 
     }
 
+    
+    
+    private void CombineObjects(){
+        
+        List<GameObject> gameObjectList= new List<GameObject>();
+
+        foreach (GameObject gameObject in gameObjectListWithEmpty)
+        {
+            gameObjectList.Add(gameObject);
+        }
+        
+
+        GameObject emptyObject= Instantiate(gameObjectListWithEmpty[0],locEmptyObject,Quaternion.identity);
+
+        int range= 14;
+
+        for (int i = 1; i < 5; i++){
+            int index=Random.Range(1,range);
+            
+            GameObject spawnedObject= Instantiate(gameObjectList[index],locEmptyObject,Quaternion.identity);
+            gameObjectList.RemoveAt(index);
+            range--;            
+            locEmptyObject+=Vector3.forward*15;
+        }
+    }
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void DestroyBehind()
     {   
         obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
@@ -61,6 +121,22 @@ public class InfiniteMap : MonoBehaviour
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void GenerateMap()
     {
