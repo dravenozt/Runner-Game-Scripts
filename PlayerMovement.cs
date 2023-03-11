@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform camTransformHolder;
     public float shakeMagnitude;
     Vector3 velocity= Vector3.zero;
+    public Variables variables;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -54,16 +55,12 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {   
         
-        //Physics.autoSyncTransforms=true;
+        
         rb = GetComponent<Rigidbody>();
         xPos=rb.position.x;
         ypos=rb.position.y;
         zPos= rb.position.z;
-        
-        //xRotation=transform.rotation.x;
-        
-        //rb.AddForce(Vector3.forward*movementFactor*Time.fixedDeltaTime,ForceMode.Force);
-        //movementFactor=700f;
+        cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
         
     }
 
@@ -75,123 +72,52 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        GetInput();
-        //Debug.Log(Physics.autoSyncTransforms);
-        //Debug.Log(Time.time);
-        RBControlSideMovement();
-        //Debug.Log(collisionTimer);
-        //RBControlSideMovement();
-        //transform.Translate(Vector3.forward*Time.deltaTime*playerSpeed);
-
-        
-        if (collisionTimer>0.02)
-        {   
-            GetComponent<CapsuleCollider>().enabled=false;
-            rb.useGravity=false;
-            GetComponent<PlayerMovement>().enabled=false;
-            
-            
-        }
-        
-
-
-        //rb.velocity = new Vector3(0, 0, playerSpeed);
-        
-        //ControlSideMovement();
-
-    /*    if (isSliding)//&&transform.rotation.x!=-56)
-        {   
-            xRotation= Mathf.MoveTowards(xRotation,-90,slideAgression * Time.deltaTime);
-            transform.rotation= Quaternion.Euler(xRotation,0,0);
-            //Debug.Log("dönüyom aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
-            if (transform.rotation == Quaternion.Euler(-90,0,0))
-            {
-                stopSlidingPhase=true;
-                isSliding=false;
-            }
-            
-            
-        }
-
-        if (stopSlidingPhase)
-        {   
-            
-            xRotation= Mathf.MoveTowards(xRotation,-60,100 * Time.deltaTime);
-            transform.rotation= Quaternion.Euler(xRotation,0,0);
-            
-
-        }
-
-        if (transform.rotation==Quaternion.Euler(-60,0,0)){
-
-            stopSlidingPhase2=true;
-        }
-            if (stopSlidingPhase2)
-            {   
-                stopSlidingPhase=false;
-                Debug.Log("hocam kalkıyorum");
-                //slideAgression=200;
-                xRotation= Mathf.MoveTowards(xRotation,0,slideAgression * Time.deltaTime);
-                transform.rotation= Quaternion.Euler(xRotation,0,0);
-                
-
-            }
-            if (transform.rotation == Quaternion.Euler(0,0,0))
-            {
-                    stopSlidingPhase2=false;
-            }
-
-
-        if (!stopSlidingPhase&&!isSliding&&!isJumping)
+        //Speed Up the player over time
+        if (playerSpeed<1500)
         {
-            //animationController.CrossFade("run@loop");
-        }*/
-        
+            playerSpeed += Time.deltaTime * 5;
+        }
 
-        
-        
+        //Get key presses
+        GetInput();
+
+        RBControlSideMovement();
+
+        //Codes to run when hit
+        WhenDie();
 
     }
 
-    
+
+
 
     private void FixedUpdate()
     {
-
         
-        
-
+        //When not changing lane, constraint x position
         ConstraintXposition();
-
-        //rb.AddForce(Vector3.forward * Time.fixedDeltaTime * playerSpeed, ForceMode.VelocityChange);
-
-
-        //rb.drag = rb.drag - rb.drag * Time.fixedDeltaTime * 0.001f * acceleration;
-
         Jump();
         
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////şu ikisi aç kapa
-        //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
 
-
-        //transform.position= rb.position;
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //zPos= Mathf.MoveTowards(zPos,zPos+1,playerSpeed * Time.deltaTime);
-        //rb.MovePosition(new Vector3(rb.position.x,rb.position.y,zPos));
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ileri hareket eden bu
+        //Move character forward
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, playerSpeed * Time.fixedDeltaTime);
 
 
-        
 
-        
+    }
 
+        private void WhenDie()
+    {
+        if (collisionTimer > 0.02)
+        {
+            GetComponent<CapsuleCollider>().enabled = false;
+            rb.useGravity = false;
+            rb.constraints=RigidbodyConstraints.FreezeAll;
+            cam.GetComponent<AudioSource>().enabled=false;
+            GetComponent<PlayerMovement>().enabled = false;
+
+
+        }
     }
 
     private void ConstraintXposition()
@@ -208,14 +134,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void LateUpdate() {
-        
-        //ControlSideMovement();
-        
-        
-    }
-
-  
 
 
     
@@ -254,18 +172,6 @@ public class PlayerMovement : MonoBehaviour
             animationController.CrossFade("jump");
         }
 
-        /*
-        if (Input.GetKeyDown(KeyCode.DownArrow)&&canSlide)
-        {   
-            
-            isSliding=true;
-            animationController.CrossFade("damage",2f);
-            animationController.CrossFade("run@loop");
-            // x 'i - 56 derece döndürecen
-
-            
-            
-        }*/
 
     }
 
@@ -278,45 +184,32 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isTurningRight)
         {
-
+            //Can't go right anymore
             if (currentLane >= 1)
             {
                 isChangingLane=false;
                 isTurningRight = false;
                 return;
             }
-
-            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f))//rb.position.x != (currentLane +1)*laneDistance //!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f)
+            //Change lane
+            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f))
             { 
 
                 xDesiredPos=(currentLane +1)*laneDistance;
-                //rb.AddForce(Vector3.right,ForceMode.VelocityChange);
                 
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
                 
-                //Vector3 targetPosition=new Vector3(xDesiredPos,rb.position.y,rb.position.z);
-                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
-                //rb.position= Vector3.SmoothDamp(rb.position,targetPosition,ref velocity,0.1f);
-                
-                //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
 
-                
-                
-
-                
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));                
                                    
 
             }
+            //Update variables
             else
             {
                 isTurningRight = false;
                 isChangingLane=false;
-                //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
                 currentLane++;
-
-                //rb.constraints=RigidbodyConstraints.FreezeRotation;
-                //rb.constraints=RigidbodyConstraints.FreezePositionX;
-
                 return;
             }
             
@@ -333,29 +226,25 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f))//rb.position.x != (currentLane-1)*laneDistance//!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f)
+            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f))
             {
                 xDesiredPos=(currentLane -1)*laneDistance;
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
-                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));
-                //rb.position= new Vector3(xPos,rb.position.y,rb.position.z);
-                
-                
+                rb.MovePosition(new Vector3(xPos,rb.position.y,rb.position.z));                
 
             }
+
             else
             {
                 isChangingLane=false;
-                isTurningLeft = false;
-                
-                currentLane--;
-                
-                
-
+                isTurningLeft = false;                
+                currentLane--;             
                 return;
             }
         }
     }
+
+
 
     private void Jump()
     {
@@ -374,23 +263,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision other) {
-       // if (other.gameObject.tag=="Ground")
-        //{   
+   
             if (!grapplingGun.grappling&&!cam.GetComponent<FollowCamera>().isDying&&other.gameObject.tag=="Ground")
             {
             canJump=true;
             animationController.CrossFade(default);//"run@loop");
             }
 
+            if (other.gameObject.tag=="Bump")
+            {
+                rb.AddForce(500*Time.deltaTime*Vector3.up,ForceMode.VelocityChange);
+            }
             
-
-            //collisionTimer=0;
-        //}
-
-        /*else
-        {
-            canJump=false;
-        }*/
     }
     
     private void OnCollisionStay(Collision other) {
@@ -398,7 +282,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.gameObject.tag=="ObstacleRoad")
         {
-            
+            //Update the collisiontimer 
             collisionTimer+=Time.deltaTime/2;
 
             ////////////////////////Camera Shake
@@ -408,15 +292,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 camPos= transform.position+ cam.GetComponent<FollowCamera>().offSet.position;
 
             cam.transform.position= camPos+new Vector3(x,y,0)*Time.deltaTime*shakeMagnitude;
-            //cam.transform.position= cam.GetComponent<FollowCamera>().offSet.transform.position+transform.position;
 
-
-            
-            //cam.GetComponent<FollowCamera>().offSet.transform.position+=Vector3.forward*collisionTimer*5;
-            //cam.transform.position+=Vector3.forward*shakeMagnitude*Time.deltaTime;
-
-            
-            //cam.transform.localPosition=camTransformHolder.transform.position;
         }
 
         
@@ -424,8 +300,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionExit(Collision other) {
         canJump=false;
+        //Set collision timer to 0 to prevent sudden hits
         collisionTimer=0;
-        //cam.transform.localPosition=camTransformHolder.transform.position;
+
     }
 
 
@@ -490,7 +367,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 targetPosition = new Vector3((currentLane+1)*laneDistance,rb.position.y, rb.position.z ); 
                 
-                transform.localPosition = Vector3.Lerp(transform.localPosition,targetPosition,0.2f);//Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+                transform.localPosition = Vector3.Lerp(transform.localPosition,targetPosition,0.2f);
                 
                 
                 
@@ -519,10 +396,9 @@ public class PlayerMovement : MonoBehaviour
 
             if (transform.position.x > (currentLane-1)*laneDistance+0.1f)
             {
-                targetPosition = new Vector3((currentLane-1)*laneDistance,transform.localPosition.y, transform.position.z);//transform.localPosition.y, transform.localPosition.z); //(currentLane + direction) * laneOffset
+                targetPosition = new Vector3((currentLane-1)*laneDistance,transform.localPosition.y, transform.position.z);
                 transform.localPosition =Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
-                //rb.position = Vector3.SmoothDamp(rb.position,targetPosition,ref velocity,0.1f);
-                //transform.localPosition = Vector3.Lerp(transform.localPosition,targetPosition,0.2f);
+
                 
 
             }
