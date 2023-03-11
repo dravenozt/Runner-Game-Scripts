@@ -40,6 +40,10 @@ public class PlayerMovement : MonoBehaviour
     public float shakeMagnitude;
     Vector3 velocity= Vector3.zero;
     public Variables variables;
+
+    //touch variables
+    Vector2 endposition;
+    Vector2 startposition;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -80,6 +84,9 @@ public class PlayerMovement : MonoBehaviour
 
         //Get key presses
         GetInput();
+
+        //get mobile swipes
+        GetInputMobile();
 
         RBControlSideMovement();
 
@@ -134,7 +141,84 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void GetInputMobile()
+    {
+        if (Input.touchCount>0)
+        {   
+            Touch touch = Input.GetTouch(0);
 
+            if (touch.phase==TouchPhase.Began)
+            {
+                startposition= touch.position;
+            }
+
+
+            
+
+
+
+            if (!isChangingLane)
+            {   
+                //get touch
+            if (touch.phase==TouchPhase.Ended)
+            {
+                endposition= touch.position;
+            
+                
+                
+                //get right swipe
+                if (endposition.x>startposition.x&&(endposition.x-startposition.x>endposition.y-startposition.y)&&(endposition.x-startposition.x>startposition.y- endposition.y))
+                {   
+            
+                    isChangingLane=true;       
+                    isTurningRight=true;
+                    isTurningLeft=false;
+                    
+                }
+
+          
+            
+            
+            
+            
+                //get left swipe
+                if (endposition.x<startposition.x && (startposition.x-endposition.x>endposition.y-startposition.y)&&(startposition.x-endposition.x>startposition.y- endposition.y))
+                {   
+                    isChangingLane=true;
+                    isTurningLeft=true;
+                    isTurningRight=false;
+                    
+                }
+
+                if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x))
+                {
+                isJumping= true;
+                
+                isChangingLane=false;
+                animationController.CrossFade("jump");
+                
+                }
+
+                if (startposition.y>endposition.y&&(startposition.y-endposition.y>endposition.x-startposition.x)&&(startposition.y-endposition.y>startposition.x -endposition.x))
+                {
+                    grapplingGun.StartGrappleWithAnim();
+                }
+
+                
+            }
+
+            
+        
+        
+            }
+        
+        }
+
+
+            
+
+
+    }
 
     
     private void GetInput()
@@ -254,7 +338,8 @@ public class PlayerMovement : MonoBehaviour
             //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
             if (rb.position.y < 2)
             {
-                rb.AddForce(Vector3.up * Time.deltaTime * jumpDistance, ForceMode.VelocityChange);
+                rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance, ForceMode.VelocityChange);
+                
             }
             isJumping = false;
             

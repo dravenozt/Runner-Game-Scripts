@@ -41,10 +41,14 @@ private void Start() {
 
 
 private void Update() {
-    if (Input.GetKeyDown(grappleKey))
-        {
+    
+    //pc control
+    /*if (Input.GetKeyDown(grappleKey))
+    {
             StartGrappleWithAnim();
-        }
+    }*/
+
+    
 
 
         if (grapplingCDtimer>0)
@@ -57,7 +61,7 @@ private void Update() {
     //Debug.Log(FindDirectionVector(transform.position,tavan.transform.position));
 }
 
-    private void StartGrappleWithAnim()
+    public void StartGrappleWithAnim()
     {   
         if (grapplingCDtimer>0)
     {
