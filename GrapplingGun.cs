@@ -89,6 +89,7 @@ private void Update() {
         yield return new WaitForSeconds(0.2f);
         StartGrapple();
         animationController.CrossFade("sit_idle@loop");
+        Debug.Log("hocam bura çalıştı");
         }
 
     }
@@ -111,6 +112,7 @@ void StartGrapple(){
 
         Invoke(nameof(ExecuteGrapple),grappleDelayTime);
         hit.collider.enabled=false;///////////////////////////////////////////////////////////////////////////////////////////////////////////buraya iyi bakkkkkkkkk
+        Debug.Log("hocam fonksiyon da çalıştı");
     }
 
     else

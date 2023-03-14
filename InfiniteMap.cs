@@ -7,6 +7,7 @@ public class InfiniteMap : MonoBehaviour
 {
 
     public GameObject player;
+    
     public GameObject tile1;
     public GameObject baseTile;
     public GameObject leftLantern;
@@ -15,47 +16,114 @@ public class InfiniteMap : MonoBehaviour
     private float positionMultiplier=31f;
     public GameObject[] obstacles;
     public GameObject[] gameObjectListWithEmpty;
-    Vector3 locEmptyObject;
+    public Vector3 locEmptyObject;
     public int[] sayilar;
     
+    ObjectPooler objectPooler;
+    Vector3 locTile1;
+    Vector3 locBaseTile;
+    Vector3 locLeftLantern;
+    Vector3 locRightLantern;
+    Vector3 locPlane;
+    int oldInt;
+    int newInt;
     
 
     // Update is called once per frame
 
+    public static InfiniteMap Instance;
+
+    private void Awake() {
+        Instance= this;
+    }
+
+
+
 
     private void Start()
-    {
+    {   
+        locTile1=Vector3.zero;
+        objectPooler= ObjectPooler.Instance;
         locEmptyObject = new Vector3(0, 0, 30);
+        locPlane=Vector3.zero+ Vector3.down/2;
+        locRightLantern=Vector3.zero+ Vector3.forward*16f;
+        
+        newInt=Random.Range(6,29);
 
 
-        GenerateMap();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
+        SpawnPlatform();
 
-        GenerateObstacles();
-        //CombineObjects();
-        //CombineObjects();
-        //Debug.Log(GetPermutations(sayilar,2));
+        SpawnBase();
+        SpawnBase();
+        SpawnBase();
+        SpawnBase();
+        
+       
 
 
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
+        SpawnPlane();
 
+
+        SpawnObstacle();
+        SpawnObstacle();
+        SpawnObstacle();
+        SpawnObstacle();
 
     }
 
     void Update()
-    {
-
-        if (player.transform.position.z > positionMultiplier)
-        {   
-            
-                GenerateMap();
-                GenerateObstacles();
-                positionMultiplier += 31f;
-            
-            
-            
+    {   
+        //spawn platforms
+        if (player.transform.position.z>locTile1.z-60)
+        {
+            SpawnPlatform();
         }
 
-        
-        DestroyBehind();
+        if (player.transform.position.z>locBaseTile.z-60)
+        {
+            SpawnBase();
+        }
+
+        if (player.transform.position.z>locLeftLantern.z-60)
+        {
+            SpawnLeftLantern();
+        }
+
+        if (player.transform.position.z>locRightLantern.z-60)
+        {
+            SpawnRightLantern();
+        }
+
+        if (player.transform.position.z>locPlane.z-60)
+        {
+            SpawnPlane();
+        }
+
+        if (Vector3.Distance(player.transform.position,locEmptyObject)<100f)
+        {
+            SpawnObstacle();
+        }
+
 
     }
 
@@ -73,6 +141,176 @@ public class InfiniteMap : MonoBehaviour
     }
 
 
+    private void SpawnObstacle(){
+        
+        //newInt=Random.Range(6,20);
+        while (newInt==oldInt)
+        {
+            newInt=Random.Range(6,29);
+        }
+        switch (newInt)//19 obje var
+        {   
+            //barrels
+            case 6: 
+            objectPooler.SpawnFromPool("barrels",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+            
+            //barrier
+            case 7: 
+            objectPooler.SpawnFromPool("barrier",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+            
+            //buyukagac2
+            case 8: 
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //buyukagac
+            case 9: 
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //cart
+            case 10: 
+            objectPooler.SpawnFromPool("cart",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //coffin
+            case 11: 
+            objectPooler.SpawnFromPool("coffin",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //emtree
+            case 12: 
+            objectPooler.SpawnFromPool("emtree",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //hooktree
+            case 13: 
+            objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //ltasobegi
+            case 14: 
+            objectPooler.SpawnFromPool("ltasobegi",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //mezar
+            case 15: 
+            objectPooler.SpawnFromPool("mezar",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //pillars
+            case 16: 
+            objectPooler.SpawnFromPool("pillars",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //rock1
+            case 17: 
+            objectPooler.SpawnFromPool("rock1",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //rock2
+            case 18: 
+            objectPooler.SpawnFromPool("rock2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //tasnojump
+            case 19: 
+            objectPooler.SpawnFromPool("tasnojump",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+            //tree comb 1
+            case 20: 
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            break;
+
+            //tree comb 2
+            case 21: 
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            break;
+
+            //tree-pillar-tree combinations(1)
+            case 22: 
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+
+            objectPooler.SpawnFromPool("pillars",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            break;
+
+            //tree-pillar-tree combinations(2)
+            case 23: 
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+
+            objectPooler.SpawnFromPool("pillars",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            break;
+            
+            //increase the chances hooktree spawn
+            case 24: 
+            objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;       
+            
+
+            //hooktree - trees combinations(1)
+            case 25: 
+            objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            break;
+
+            //hooktree - trees combinations(2)
+            case 26: 
+            objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+
+            objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            
+            objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;
+            break;
+
+            //increase barrels
+            case 27: 
+            objectPooler.SpawnFromPool("barrels",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+            
+            //increase barrier
+            case 28: 
+            objectPooler.SpawnFromPool("barrier",locEmptyObject,Quaternion.identity); 
+            locEmptyObject+=Vector3.forward*15;;break;
+
+
+            
+            
+
+            
+            default:break;
+        }
+        oldInt=newInt;
+    }
 
     
     
@@ -99,166 +337,51 @@ public class InfiniteMap : MonoBehaviour
             locEmptyObject+=Vector3.forward*15;
         }
     }
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    private void DestroyBehind()
-    {   
-        obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        foreach (GameObject obstacle in obstacles)
-        {
-            if (obstacle.transform.position.z < player.transform.position.z - 30)
-            {
-                GameObject.Destroy(obstacle);
-
-            }
-        }
-    }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    private void GenerateMap()
-    {
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-        SpawnPlatform();
-
-        SpawnBase();
-        SpawnBase();
-        SpawnBase();
-        SpawnBase();
-        //SpawnBase();
-        //SpawnBase();
-
-        SpawnLanterns();
-        SpawnLanterns();
-        SpawnLanterns();
-
-        
-        SpawnPlane();
-        SpawnPlane();
-        SpawnPlane();
-        SpawnPlane();
-        SpawnPlane();
-        SpawnPlane();
-        
-        
-    }
-
-    private void SpawnLanterns()
-    {
-        SpawnLeftLantern();
-        SpawnRightLantern();
-    }
 
     private void SpawnPlatform()
     {   
-        if (Vector3.Distance(player.transform.position,tile1.transform.position)<100f){
-        Vector3 loctile1 = new Vector3(tile1.transform.position.x, tile1.transform.position.y, tile1.transform.position.z);
-        tile1 = Instantiate(tile1, loctile1 + Vector3.forward * 4.472136f, Quaternion.identity);
-        }
+
+        objectPooler.SpawnFromPool("tile1",locTile1,Quaternion.identity);
+        locTile1+=Vector3.forward * 4.472136f;
+
         
         
-        //obstacles.Append(tile1);
+
         
     }
 
     private void SpawnBase(){
-        
-        if (Vector3.Distance(player.transform.position,baseTile.transform.position)<60f)
-        {
-            Vector3 locBaseTile= new Vector3(baseTile.transform.position.x, baseTile.transform.position.y, baseTile.transform.position.z);
-            baseTile = Instantiate(baseTile, locBaseTile + Vector3.forward * 15f, Quaternion.identity);
-        }
 
-        
-        //obstacles.Append(baseTile);
+
+        objectPooler.SpawnFromPool("baseTile",locBaseTile,Quaternion.identity);
+        locBaseTile+=Vector3.forward * 15f;
     }
 
     private void SpawnLeftLantern(){
-        if (Vector3.Distance(player.transform.position,leftLantern.transform.position)<100f){
-            Vector3 locLeftLantern= new Vector3(leftLantern.transform.position.x, leftLantern.transform.position.y, leftLantern.transform.position.z);
-            leftLantern = Instantiate(leftLantern, locLeftLantern + Vector3.forward * 16f, Quaternion.identity);
-        }
 
-        //obstacles.Append(leftLantern);
+
+        objectPooler.SpawnFromPool("leftLamp",locLeftLantern,Quaternion.identity);
+        locLeftLantern+=Vector3.forward * 32f;
     
     }
 
     private void SpawnRightLantern(){
-        if (Vector3.Distance(player.transform.position,rightLantern.transform.position)<100f){
-        Vector3 locRightLantern= new Vector3(rightLantern.transform.position.x, rightLantern.transform.position.y, rightLantern.transform.position.z);
-        rightLantern = Instantiate(rightLantern, locRightLantern + Vector3.forward * 16f, Quaternion.identity);
-        }
 
-        //obstacles.Append(rightLantern);
+
+        objectPooler.SpawnFromPool("rightLamp",locRightLantern,Quaternion.identity);
+        locRightLantern+=Vector3.forward * 32f;
     
     }
     private void SpawnPlane(){
-        if (Vector3.Distance(player.transform.position,plane.transform.position)<100f){
-        Vector3 locPlane= new Vector3(plane.transform.position.x, plane.transform.position.y, plane.transform.position.z);
-        plane = Instantiate(plane, locPlane + Vector3.forward * 10f, Quaternion.identity);
-        }
 
-        //obstacles.Append(plane);     
+
+        objectPooler.SpawnFromPool("plane",locPlane,Quaternion.identity);
+        locPlane+=Vector3.forward * 10f;     
            
     }
 

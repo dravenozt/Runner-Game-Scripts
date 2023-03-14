@@ -190,6 +190,7 @@ public class PlayerMovement : MonoBehaviour
                     
                 }
 
+                //jump
                 if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x))
                 {
                 isJumping= true;
@@ -199,13 +200,33 @@ public class PlayerMovement : MonoBehaviour
                 
                 }
 
+                //grapple
                 if (startposition.y>endposition.y&&(startposition.y-endposition.y>endposition.x-startposition.x)&&(startposition.y-endposition.y>startposition.x -endposition.x))
                 {
                     grapplingGun.StartGrappleWithAnim();
                 }
 
+
+            
+                   
+                    
+                        //jump
+                    if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x))
+                    {
+                    isJumping= true;
+                    
+                    isChangingLane=false;
+                    animationController.CrossFade("jump");
+                    
+                    }
+
+                    
+                
                 
             }
+
+
+            
 
             
         
@@ -336,12 +357,13 @@ public class PlayerMovement : MonoBehaviour
         {   
             
             //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
-            if (rb.position.y < 2)
-            {
+            //if (rb.position.y < 2)
+            //{
                 rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance, ForceMode.VelocityChange);
                 
-            }
+            //}
             isJumping = false;
+            canJump=false;
             
             
         }
@@ -363,7 +385,7 @@ public class PlayerMovement : MonoBehaviour
     }
     
     private void OnCollisionStay(Collision other) {
-        canJump=true;
+        //canJump=true;
 
         if (other.gameObject.tag=="ObstacleRoad")
         {
