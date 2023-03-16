@@ -44,6 +44,8 @@ public class PlayerMovement : MonoBehaviour
     //touch variables
     Vector2 endposition;
     Vector2 startposition;
+    public bool isSpiderChasing=false;
+    public GameObject spider;
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -70,7 +72,8 @@ public class PlayerMovement : MonoBehaviour
 
     
     void Update()
-    {
+    {   
+        
         if (activeGrapple)
         {
             return;
@@ -93,6 +96,12 @@ public class PlayerMovement : MonoBehaviour
         //Codes to run when hit
         WhenDie();
 
+        if (collisionTimer>0)
+        {
+            isSpiderChasing=true;
+            
+        }
+
     }
 
 
@@ -113,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-        private void WhenDie()
+    private void WhenDie()
     {
         if (collisionTimer > 0.02)
         {
@@ -210,16 +219,7 @@ public class PlayerMovement : MonoBehaviour
             
                    
                     
-                        //jump
-                    if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x))
-                    {
-                    isJumping= true;
-                    
-                    isChangingLane=false;
-                    animationController.CrossFade("jump");
-                    
-                    }
-
+                 
                     
                 
                 
@@ -381,6 +381,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 rb.AddForce(500*Time.deltaTime*Vector3.up,ForceMode.VelocityChange);
             }
+
+            if (spider.GetComponent<SpiderMovement>().canDie&&other.gameObject.tag=="ObstacleRoad")
+            {
+                GetComponent<CapsuleCollider>().enabled = false;
+                 rb.useGravity = false;
+            rb.constraints=RigidbodyConstraints.FreezeAll;
+            cam.GetComponent<AudioSource>().enabled=false;
+            GetComponent<PlayerMovement>().enabled = false;
+            }
             
     }
     
@@ -396,9 +405,10 @@ public class PlayerMovement : MonoBehaviour
             float x= Random.Range(-1f,1f);
             float y= Random.Range(-1f,1f);
 
-            Vector3 camPos= transform.position+ cam.GetComponent<FollowCamera>().offSet.position;
+            Vector3 camPos= rb.position+ cam.GetComponent<FollowCamera>().offSet.position;
 
-            cam.transform.position= camPos+new Vector3(x,y,0)*Time.deltaTime*shakeMagnitude;
+            cam.transform.position= camPos+new Vector3(x,y,-4.3f)*Time.deltaTime*shakeMagnitude;
+            
 
         }
 
