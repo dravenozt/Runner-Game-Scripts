@@ -140,6 +140,7 @@ void ExecuteGrapple(){
     Vector3 somevector= new Vector3(0,1,0);
     pm.JumpToPosition(grapplePoint,highestPointOnArc);//grapple pointe atlayacak
     Invoke(nameof(StopGrapple),1f);
+    
 }
 
 void StopGrapple(){

@@ -46,6 +46,8 @@ public class PlayerMovement : MonoBehaviour
     Vector2 startposition;
     public bool isSpiderChasing=false;
     public GameObject spider;
+    bool canSwipe=true;
+    
    // private bool isSliding=false;
    // private bool canSlide=true;
     //public float slideAgression;
@@ -74,15 +76,16 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {   
         
+        //Debug.Log(rb.velocity.z);
         if (activeGrapple)
         {
             return;
         }
 
         //Speed Up the player over time
-        if (playerSpeed<1500)
+        if (rb.velocity.z<29)
         {
-            playerSpeed += Time.deltaTime * 5;
+            playerSpeed += Time.deltaTime * acceleration;
         }
 
         //Get key presses
@@ -159,6 +162,7 @@ public class PlayerMovement : MonoBehaviour
             if (touch.phase==TouchPhase.Began)
             {
                 startposition= touch.position;
+                canSwipe=true;
             }
 
 
@@ -166,22 +170,35 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-            if (!isChangingLane)
+            if (true)
             {   
+                
+
+            
                 //get touch
-            if (touch.phase==TouchPhase.Ended)
+            if (touch.phase==TouchPhase.Moved)
             {
                 endposition= touch.position;
+                
             
                 
                 
                 //get right swipe
-                if (endposition.x>startposition.x&&(endposition.x-startposition.x>endposition.y-startposition.y)&&(endposition.x-startposition.x>startposition.y- endposition.y))
+                if (endposition.x>startposition.x&&(endposition.x-startposition.x>endposition.y-startposition.y)&&(endposition.x-startposition.x>startposition.y- endposition.y)&&canSwipe)
                 {   
             
                     isChangingLane=true;       
                     isTurningRight=true;
                     isTurningLeft=false;
+                    canSwipe=false;
+
+                    
+
+                    
+                    
+                    
+                    
+                    
                     
                 }
 
@@ -191,29 +208,56 @@ public class PlayerMovement : MonoBehaviour
             
             
                 //get left swipe
-                if (endposition.x<startposition.x && (startposition.x-endposition.x>endposition.y-startposition.y)&&(startposition.x-endposition.x>startposition.y- endposition.y))
+                if (endposition.x<startposition.x && (startposition.x-endposition.x>endposition.y-startposition.y)&&(startposition.x-endposition.x>startposition.y- endposition.y)&&canSwipe)
                 {   
                     isChangingLane=true;
                     isTurningLeft=true;
                     isTurningRight=false;
+
+                    canSwipe=false;
+
+                    
+
+                    
+                    
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                }
+
+                //grapple
+                if (startposition.y>endposition.y&&(startposition.y-endposition.y>endposition.x-startposition.x)&&(startposition.y-endposition.y>startposition.x -endposition.x)&&canSwipe)
+                {   
+                    Debug.Log("valla ben grapple tuşuna bastım");
+                    grapplingGun.StartGrappleWithAnim();
+                    canSwipe=false;
+                    
                     
                 }
 
                 //jump
-                if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x))
+                if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x)&&canSwipe&&canJump)
                 {
                 isJumping= true;
                 
                 isChangingLane=false;
                 animationController.CrossFade("jump");
+                canSwipe=false;
+                
+                
+                
+                
                 
                 }
 
-                //grapple
-                if (startposition.y>endposition.y&&(startposition.y-endposition.y>endposition.x-startposition.x)&&(startposition.y-endposition.y>startposition.x -endposition.x))
-                {
-                    grapplingGun.StartGrappleWithAnim();
-                }
+                
+
+                
 
 
             
@@ -224,6 +268,16 @@ public class PlayerMovement : MonoBehaviour
                 
                 
             }
+            
+            if (touch.phase==TouchPhase.Ended)
+            {   
+                endposition= touch.position;
+                canSwipe=true;
+
+                
+                
+            }
+            
 
 
             
@@ -232,6 +286,9 @@ public class PlayerMovement : MonoBehaviour
         
         
             }
+            return;
+
+            
         
         }
 
@@ -273,6 +330,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isJumping= true;
             
+            
             isChangingLane=false;
             animationController.CrossFade("jump");
         }
@@ -297,7 +355,7 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
             //Change lane
-            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.1f,(currentLane +1)*laneDistance-0.1f))
+            if (!IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.15f,(currentLane +1)*laneDistance-0.15f))
             { 
 
                 xDesiredPos=(currentLane +1)*laneDistance;
@@ -311,11 +369,18 @@ public class PlayerMovement : MonoBehaviour
             }
             //Update variables
             else
-            {
+            {   
                 isTurningRight = false;
                 isChangingLane=false;
                 currentLane++;
                 return;
+            }
+
+            if (IsBetween(rb.position.x,(currentLane +1)*laneDistance+0.4f,(currentLane +1)*laneDistance-0.4f))
+            {
+                //isTurningRight = false;
+                isChangingLane=false;
+                
             }
             
         }
@@ -331,7 +396,7 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
 
-            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.1f,(currentLane -1)*laneDistance-0.1f))
+            if (!IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.15f,(currentLane -1)*laneDistance-0.15f))
             {
                 xDesiredPos=(currentLane -1)*laneDistance;
                 xPos= Mathf.MoveTowards(xPos,xDesiredPos,laneChangeSpeed * Time.deltaTime);
@@ -346,6 +411,12 @@ public class PlayerMovement : MonoBehaviour
                 currentLane--;             
                 return;
             }
+
+            if (IsBetween(rb.position.x,(currentLane -1)*laneDistance+0.4f,(currentLane -1)*laneDistance-0.4f))
+            {
+                isChangingLane=false;                
+
+            }
         }
     }
 
@@ -353,15 +424,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (isJumping && canJump)
+        if (isJumping&&canJump)
         {   
             
-            //rb.AddForce(Vector3.up*Time.fixedDeltaTime*50,ForceMode.VelocityChange);
-            //if (rb.position.y < 2)
-            //{
-                rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance, ForceMode.VelocityChange);
+            
+                rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
                 
-            //}
+            
+            
+                
+                
+            
             isJumping = false;
             canJump=false;
             
@@ -370,10 +443,11 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision other) {
-   
+
+            canJump=true;
             if (!grapplingGun.grappling&&!cam.GetComponent<FollowCamera>().isDying&&other.gameObject.tag=="Ground")
             {
-            canJump=true;
+            
             animationController.CrossFade(default);//"run@loop");
             }
 
@@ -416,7 +490,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void OnCollisionExit(Collision other) {
-        canJump=false;
+        //canJump=false;
         //Set collision timer to 0 to prevent sudden hits
         collisionTimer=0;
 
