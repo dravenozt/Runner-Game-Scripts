@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 
 
+
 public class GrapplingGun : MonoBehaviour
 {
 private PlayerMovement pm;
@@ -32,12 +33,23 @@ private GameObject tavan;
 
 public Animation animationController;
 public bool canGrappleJump=false;
+public LayerMask layerMask;
+public GameObject[] allObjects;
+
+
+
+
+public Collider[] colliders;///////////////////////////////////////sonradan
 
 
 
 private void Start() {
+    
+    
     pm=GetComponentInParent<PlayerMovement>();
     GetClosestCeilingAhead();
+
+    
 }
 
 
@@ -48,9 +60,12 @@ private void Update() {
     {
             StartGrappleWithAnim();
     }*/
-
     
-
+    if (colliders.Length>0)
+    {
+        Debug.Log("haha");
+    }
+    
 
         if (grapplingCDtimer>0)
     {
@@ -59,8 +74,10 @@ private void Update() {
 
     
     tavan= GameObject.FindGameObjectWithTag("Tavan");
-    //Debug.Log(FindDirectionVector(transform.position,tavan.transform.position));
+    
 }
+
+
 
     public void StartGrappleWithAnim()
     {   
@@ -70,21 +87,17 @@ private void Update() {
     }
 
         StartCoroutine("StartGrappleSequence");
-        /*animationController.CrossFade("attack_sword_01");//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Invoke("StartGrapple", 0.2f);//StartGrapple();*/
+        
     }
 
     private void LateUpdate() {
-    /*if (grappling)
-    {
-        lineRenderer.SetPosition(0,gunTip.position);
-    }*/
+    
 }
 
     private IEnumerator StartGrappleSequence(){
-        RaycastHit hit;
-
-        if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
+        //RaycastHit hit;
+        grapplePoint=GetClosestCeilingAhead().transform.position;
+        if(Vector3.Distance(transform.position,grapplePoint)<25)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
         {
         
         animationController.CrossFade("attack_sword_01");
@@ -94,6 +107,8 @@ private void Update() {
 
         
         }
+
+        
 
     }
 
@@ -105,16 +120,16 @@ void StartGrapple(){
 
     grappling= true;
     
+    
 
+    //RaycastHit hit;
 
-    RaycastHit hit;
-
-    if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))// transform.TransformDirection(Vector3.up) eskiden direction buydu
+    if(Vector3.Distance(transform.position,grapplePoint)<25)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))// transform.TransformDirection(Vector3.up) eskiden direction buydu
     {
-        grapplePoint= hit.point;
+        grapplePoint=GetClosestCeilingAhead().transform.position;//colliders[0].gameObject.transform.position; //hit.point;
 
         Invoke(nameof(ExecuteGrapple),grappleDelayTime);
-        hit.collider.enabled=false;///////////////////////////////////////////////////////////////////////////////////////////////////////////buraya iyi bakkkkkkkkk
+        GetClosestCeilingAhead().GetComponent<Collider>().enabled=false;//hit.collider.enabled=false;///////////////////////////////////////////////////////////////////////////////////////////////////////////buraya iyi bakkkkkkkkk
         
     }
 
