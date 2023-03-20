@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     public Camera cam;
     public Transform camTransformHolder;
     public float shakeMagnitude;
-    Vector3 velocity= Vector3.zero;
+    public Vector3 velocity= Vector3.zero;
     public Variables variables;
 
     //touch variables
@@ -47,6 +47,15 @@ public class PlayerMovement : MonoBehaviour
     public bool isSpiderChasing=false;
     public GameObject spider;
     bool canSwipe=true;
+    CharacterController controller;
+    float gravity = -15f;
+    //gravity resets to this float when grounded
+    float gravityOffSet=-15f;
+    public float jumpSpeed;
+    Vector3 upPosition;
+    Vector3 desiredUpPos;
+    bool doGrapple=false;
+    
     
    // private bool isSliding=false;
    // private bool canSlide=true;
@@ -69,12 +78,14 @@ public class PlayerMovement : MonoBehaviour
         ypos=rb.position.y;
         zPos= rb.position.z;
         cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
+        controller=GetComponent<CharacterController>();
         
     }
 
     
     void Update()
     {   
+        
         
         //Debug.Log(rb.velocity.z);
         if (activeGrapple)
@@ -85,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
         //Speed Up the player over time
         if (rb.velocity.z<29)
         {
-            playerSpeed += Time.deltaTime * acceleration;
+            playerSpeed += Time.deltaTime * acceleration/10;
         }
 
         //Get key presses
@@ -94,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
         //get mobile swipes
         GetInputMobile();
 
-        RBControlSideMovement();
+        //RBControlSideMovement();
 
         //Codes to run when hit
         WhenDie();
@@ -105,6 +116,50 @@ public class PlayerMovement : MonoBehaviour
             
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////character controller movement
+        
+        if (!controller.isGrounded)
+        {
+            //controller.Move(velocity);//Vector3.up*Time.deltaTime*gravity);
+        }
+        //velocity= new Vector3(0,velocity.y + gravity,5*Time.deltaTime);
+        
+        
+        JumpCC();
+        JumpGrappleCC();
+        velocity= new Vector3(0,gravity*Time.deltaTime,playerSpeed*Time.deltaTime);
+        controller.Move(velocity);
+        
+        if (controller.isGrounded)
+        {   
+            gravity=gravityOffSet;
+            velocity.y=gravity;
+            grapplingGun.canGrappleJump=false;
+            
+            isJumping=false;
+            canJump=true;
+        }
+        
+        if (grapplingGun.canGrappleJump)
+        {
+            gravity+=gravity*Time.deltaTime*0.5f;
+        }
+        
+        if (!controller.isGrounded&&!grapplingGun.canGrappleJump)
+        {
+            gravity+=gravity*Time.deltaTime;
+        }
+
+        
+        
+        ControlSideMovementCC();
+        
+        
+        Debug.Log(controller.isGrounded);
+        
+        
+        
+
     }
 
 
@@ -114,14 +169,18 @@ public class PlayerMovement : MonoBehaviour
     {
         
         //When not changing lane, constraint x position
-        ConstraintXposition();
-        Jump();
+        //ConstraintXposition();
+        //Jump();
         
 
         //Move character forward
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, playerSpeed * Time.fixedDeltaTime);
+        //rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, playerSpeed * Time.fixedDeltaTime);//////////////////////////////////////////ileri hareket ettiren şey
 
-
+        if (doGrapple)
+        {
+            grapplingGun.StartGrappleWithAnim();
+            doGrapple=false;
+        }
 
     }
 
@@ -301,7 +360,7 @@ public class PlayerMovement : MonoBehaviour
     
     private void GetInput()
     {
-        if (!isChangingLane)
+        //if (!isChangingLane)
         {   
             if (Input.GetKeyDown(KeyCode.RightArrow))
         {   
@@ -329,12 +388,19 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow)&&canJump)
         {
             isJumping= true;
+            //JumpCC();
             
             
             isChangingLane=false;
             animationController.CrossFade("jump");
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////sonradan ekledik lazımdı denemek için
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            //grapplingGun.StartGrappleWithAnim();
+            doGrapple=true;
+        }
 
     }
 
@@ -427,8 +493,9 @@ public class PlayerMovement : MonoBehaviour
         if (isJumping&&canJump)
         {   
             
+            //rigidbody
+            //rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
             
-                rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
                 
             
             
@@ -605,6 +672,133 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////CharacterController
+
+
+        private void ControlSideMovementCC()
+    {
+        if (isTurningRight)
+        {
+
+            if (currentLane >= 1)
+            {
+                isChangingLane=false;
+                isTurningRight = false;
+                return;
+            }
+
+            if (transform.position.x != (currentLane +1)*laneDistance)
+            {
+                targetPosition = new Vector3((currentLane+1)*laneDistance,transform.position.y, transform.position.z ); 
+                
+                
+                transform.position =Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+                
+                
+                
+
+            }
+            else
+            {
+                isTurningRight = false;
+                isChangingLane=false;
+                currentLane++;
+
+                return;
+            }
+        }
+
+
+        if (isTurningLeft)
+        {
+
+            if (currentLane <= -1)
+            {   
+                isChangingLane=false;
+                isTurningLeft = false;
+                return;
+            }
+
+            if (transform.position.x != (currentLane-1)*laneDistance)
+            {
+                targetPosition = new Vector3((currentLane-1)*laneDistance,transform.position.y, transform.position.z);
+                transform.position =Vector3.MoveTowards(transform.localPosition, targetPosition, laneChangeSpeed * Time.deltaTime);
+
+                
+
+            }
+            else
+            {
+                isChangingLane=false;
+                isTurningLeft = false;
+                currentLane--;
+
+                return;
+            }
+        }
+    }
+
+
+    private void JumpCC()
+    {
+        if (isJumping)
+        {   
+            
+            //rigidbody
+            //rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
+            
+            //if (transform.position.y!=desiredUpPos.y)
+            {
+                //desiredUpPos= Vector3.up*jumpSpeed*Time.deltaTime;
+
+                //upPosition = Vector3.Lerp(controller.center,desiredUpPos,0.5f);
+                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed);//Vector3.up*jumpSpeed*Time.deltaTime,0.1f);
+                //transform.position=Vector3.Lerp(transform.position,desiredUpPos,0.5f);
+                
+        }
+            
+            
+            
+                
+                
+            
+            //isJumping = false;
+            //canJump=false;
+            
+            
+        }
+    }
+
+
+        public void JumpGrappleCC()
+    {
+        if (grapplingGun.canGrappleJump)
+        {   
+            
+            //rigidbody
+            //rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
+            
+            //if (transform.position.y!=desiredUpPos.y)
+            {
+                //desiredUpPos= Vector3.up*jumpSpeed*Time.deltaTime;
+
+                //upPosition = Vector3.Lerp(controller.center,desiredUpPos,0.5f);
+                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed*1.5f);//Vector3.up*jumpSpeed*Time.deltaTime,0.1f);
+                //transform.position=Vector3.Lerp(transform.position,desiredUpPos,0.5f);
+                
+        }
+            
+            
+            
+                
+                
+            
+            //isJumping = false;
+            //canJump=false;
+            
+            
+        }
+    }
 
 
     

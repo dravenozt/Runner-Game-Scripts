@@ -139,6 +139,11 @@ public class AltPlayerMovement : MonoBehaviour
             animationController.CrossFade("jump");
         }
 
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            grapplingGun.StartGrappleWithAnim();
+        }
+
        
 
     }

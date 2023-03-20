@@ -31,6 +31,7 @@ public float overshootYaxis;
 private GameObject tavan;
 
 public Animation animationController;
+public bool canGrappleJump=false;
 
 
 
@@ -85,10 +86,12 @@ private void Update() {
 
         if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
         {
+        
         animationController.CrossFade("attack_sword_01");
         yield return new WaitForSeconds(0.2f);
         StartGrapple();
         animationController.CrossFade("sit_idle@loop");
+
         
         }
 
@@ -126,8 +129,8 @@ void StartGrapple(){
 
 void ExecuteGrapple(){
     
-    
-    
+    canGrappleJump=true;
+    //grappling=true;////////////////////////////sonradan ekledim
     Vector3 lowestPoint= new Vector3(transform.position.x,transform.position.y-1f,transform.position.z);//-1f normali
 
     float grapplePointRelativeYPos= grapplePoint.y-lowestPoint.y;//herhangi bi değer çıkarma yok lowest point harici
@@ -138,8 +141,10 @@ void ExecuteGrapple(){
         highestPointOnArc=overshootYaxis;
     }
     Vector3 somevector= new Vector3(0,1,0);
-    pm.JumpToPosition(grapplePoint,highestPointOnArc);//grapple pointe atlayacak
-    Invoke(nameof(StopGrapple),1f);
+    
+    //pm.JumpToPosition(grapplePoint,highestPointOnArc);//grapple pointe atlayacak eskiden buydu
+    pm.JumpGrappleCC();
+    Invoke(nameof(StopGrapple),0.8f);/////////////////1f idi burası
     
 }
 
@@ -147,7 +152,9 @@ void StopGrapple(){
     animationController.Blend("tumbling",1f);
     grappling= false;
     grapplingCDtimer=grapplingCD;
-    //lineRenderer.enabled=false;
+    
+    
+    //canGrappleJump=false;
     
 
 
