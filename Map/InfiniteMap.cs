@@ -28,6 +28,7 @@ public class InfiniteMap : MonoBehaviour
     int oldInt;
     int newInt;
     
+    
 
     // Update is called once per frame
 
@@ -42,6 +43,7 @@ public class InfiniteMap : MonoBehaviour
 
     private void Start()
     {   
+        
         locTile1=Vector3.zero;
         objectPooler= ObjectPooler.Instance;
         locEmptyObject = new Vector3(0, 0, 30);
@@ -124,6 +126,8 @@ public class InfiniteMap : MonoBehaviour
             SpawnObstacle();
         }
 
+        
+
 
     }
 
@@ -140,6 +144,8 @@ public class InfiniteMap : MonoBehaviour
         
     }
 
+
+   
 
     private void SpawnObstacle(){
         

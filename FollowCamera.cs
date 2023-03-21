@@ -13,7 +13,7 @@ public class FollowCamera : MonoBehaviour
     public AnimationClip die;
     Rigidbody rb;
 
-
+     
     private void Start() {
         rb=player.GetComponent<Rigidbody>();
     }

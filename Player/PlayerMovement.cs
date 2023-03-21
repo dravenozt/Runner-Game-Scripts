@@ -47,14 +47,16 @@ public class PlayerMovement : MonoBehaviour
     public bool isSpiderChasing=false;
     public GameObject spider;
     bool canSwipe=true;
-    CharacterController controller;
-    float gravity = -15f;
+    [HideInInspector]public CharacterController controller;
+    [HideInInspector]public float gravity = -15f;
     //gravity resets to this float when grounded
-    float gravityOffSet=-15f;
+    public float gravityOffSet=-15f;
     public float jumpSpeed;
     Vector3 upPosition;
     Vector3 desiredUpPos;
     bool doGrapple=false;
+    bool shakeCamera=false;
+    SpiderMovement spiderMovement;
     
     
     
@@ -73,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {   
         
-        
+        spiderMovement=spider.GetComponent<SpiderMovement>();
         rb = GetComponent<Rigidbody>();
         xPos=rb.position.x;
         ypos=rb.position.y;
@@ -119,20 +121,19 @@ public class PlayerMovement : MonoBehaviour
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////character controller movement
         
-        if (!controller.isGrounded)
-        {
-            //controller.Move(velocity);//Vector3.up*Time.deltaTime*gravity);
-        }
-        //velocity= new Vector3(0,velocity.y + gravity,5*Time.deltaTime);
+       
         
         
+        //jump - grapple jump
         JumpCC();
         JumpGrappleCC();
+        
+        //move forward
         velocity= new Vector3(0,gravity*Time.deltaTime,playerSpeed*Time.deltaTime);
         controller.Move(velocity);
         
         if (controller.isGrounded)
-        {   
+        {   gravityOffSet=-15f;
             gravity=gravityOffSet;
             velocity.y=gravity;
             grapplingGun.canGrappleJump=false;
@@ -143,20 +144,52 @@ public class PlayerMovement : MonoBehaviour
         
         if (grapplingGun.canGrappleJump)
         {
-            gravity+=gravity*Time.deltaTime*0.5f;
+            //gravity+=gravity*Time.deltaTime*0.5f;
         }
         
-        if (!controller.isGrounded&&!grapplingGun.canGrappleJump)
+        if (!controller.isGrounded)//&&!grapplingGun.canGrappleJump)
         {
             gravity+=gravity*Time.deltaTime;
         }
+        
 
         
         
         ControlSideMovementCC();
         
         
-        Debug.Log(controller.isGrounded);
+        //Debug.Log(controller.isGrounded);
+
+        if ((controller.collisionFlags&CollisionFlags.Sides)!=0||(controller.collisionFlags&CollisionFlags.Above)!=0)
+        {   
+            if (Time.time<3)
+            {
+                return;
+            }
+            if (spiderMovement.canDie)
+            {
+                StartCoroutine("ShakeCameraAndDie");
+                rb.constraints=RigidbodyConstraints.FreezeAll;
+            }
+            
+            //Debug.Log("yandan veya yukardan temas");
+            isSpiderChasing=true;
+            shakeCamera=true;
+        }
+
+        
+        if (controller.velocity.z<0.5f)
+        {   
+            StartCoroutine("ShakeCameraAndDie");
+            rb.constraints=RigidbodyConstraints.FreezeAll;
+            
+            //WhenDieCC();
+        }
+
+        if (shakeCamera)
+        {
+            StartCoroutine("ShakeCamera");
+        }
         
         
         
@@ -361,7 +394,10 @@ public class PlayerMovement : MonoBehaviour
     
     private void GetInput()
     {
-        //if (!isChangingLane)
+        if (!controller.enabled)
+        {
+            return;
+        }
         {   
             if (Input.GetKeyDown(KeyCode.RightArrow))
         {   
@@ -391,7 +427,11 @@ public class PlayerMovement : MonoBehaviour
             isJumping= true;
             //JumpCC();
             
-            
+            if (grapplingGun.canGrappleJump)
+            {
+                gravity=gravityOffSet-13;
+                canJump=false;
+            }
             isChangingLane=false;
             animationController.CrossFade("jump");
         }
@@ -677,7 +717,11 @@ public class PlayerMovement : MonoBehaviour
 
 
         private void ControlSideMovementCC()
-    {
+    {   
+        if (controller.velocity.z<0.5f)
+        {
+            return;
+        }
         if (isTurningRight)
         {
 
@@ -741,32 +785,13 @@ public class PlayerMovement : MonoBehaviour
 
 
     private void JumpCC()
-    {
+    {   
+        
         if (isJumping)
         {   
             
-            //rigidbody
-            //rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
-            
-            //if (transform.position.y!=desiredUpPos.y)
-            {
-                //desiredUpPos= Vector3.up*jumpSpeed*Time.deltaTime;
-
-                //upPosition = Vector3.Lerp(controller.center,desiredUpPos,0.5f);
-                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed);//Vector3.up*jumpSpeed*Time.deltaTime,0.1f);
-                //transform.position=Vector3.Lerp(transform.position,desiredUpPos,0.5f);
-                
-        }
-            
-            
-            
-                
-                
-            
-            //isJumping = false;
-            //canJump=false;
-            
-            
+                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed);
+   
         }
     }
 
@@ -775,32 +800,41 @@ public class PlayerMovement : MonoBehaviour
     {
         if (grapplingGun.canGrappleJump)
         {   
-            
-            //rigidbody
-            //rb.AddForce(Vector3.up.normalized * Time.fixedDeltaTime * jumpDistance*30000, ForceMode.Impulse);
-            
-            //if (transform.position.y!=desiredUpPos.y)
-            {
-                //desiredUpPos= Vector3.up*jumpSpeed*Time.deltaTime;
-
-                //upPosition = Vector3.Lerp(controller.center,desiredUpPos,0.5f);
-                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed*1.5f);//Vector3.up*jumpSpeed*Time.deltaTime,0.1f);
-                //transform.position=Vector3.Lerp(transform.position,desiredUpPos,0.5f);
-                
-        }
-            
-            
-            
-                
-                
-            
-            //isJumping = false;
-            //canJump=false;
-            
+                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed*1.5f);    
             
         }
     }
 
+   
+   IEnumerator ShakeCamera(){
+    if (!controller.enabled)
+    {
+        yield break;
+    }
+    cam.transform.position=new Vector3(cam.transform.position.x+ Random.Range(-0.1f,0.1f),cam.transform.position.y+Random.Range(-0.1f,0.1f),cam.transform.position.z);
+    yield return new WaitForSeconds(0.1f);
+    shakeCamera=false;
+    
+    
+   }
+   
 
+   void WhenDieCC(){
+        controller.enabled=false;
+   }
+
+   IEnumerator ShakeCameraAndDie(){
+    if (!controller.enabled)
+    {
+        yield break;
+    }
+    cam.transform.position=new Vector3(cam.transform.position.x+ Random.Range(-0.1f,0.1f),cam.transform.position.y+Random.Range(-0.1f,0.1f),cam.transform.position.z);
+    yield return new WaitForSeconds(0.1f);
+    animationController.CrossFade("die");
+    shakeCamera=false;
+    controller.enabled=false;
+    
+    
+   }
     
 }

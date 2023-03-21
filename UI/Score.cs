@@ -14,7 +14,7 @@ public class Score : MonoBehaviour
     private void Update() {
 
 
-        if (player.GetComponent<PlayerMovement>().enabled)
+        if (player.GetComponent<CharacterController>().enabled)
         {
             timePassed+=Time.deltaTime;
         }

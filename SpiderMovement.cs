@@ -13,9 +13,12 @@ public class SpiderMovement : MonoBehaviour
     bool chase=true;
     public float chaseInterval;
     public bool canDie=false;
+    PlayerMovement pm;
+    
 
     private void Start() {
         catchTime=0.3f;
+        pm=player.GetComponent<PlayerMovement>();
     }
 
     private void Update() {
@@ -33,15 +36,16 @@ public class SpiderMovement : MonoBehaviour
             spiderMesh.enabled=true;
         }
 
-        if (player.GetComponent<PlayerMovement>().activeGrapple)
+        if (pm.activeGrapple)
         {
             StopChasing();
         }
 
-        if (player.GetComponent<PlayerMovement>().isSpiderChasing)
+        if (pm.isSpiderChasing)
         {   
-            canDie=true;
+            
             StartChasing();
+            
             
 
             if (chase)
@@ -66,7 +70,7 @@ public class SpiderMovement : MonoBehaviour
 
 
     public void StartChasing(){
-        if (chase&&player.GetComponent<PlayerMovement>().isSpiderChasing)
+        if (chase&&pm.isSpiderChasing)
         {
             //set the spider active
         spiderMesh.enabled=true;
@@ -81,7 +85,9 @@ public class SpiderMovement : MonoBehaviour
 
 
     public void StopChasing(){
-        if (!chase)
+        
+        
+        if (!chase||pm.activeGrapple)
         {   
             Debug.Log("chase bırakılıyor");
             transform.localPosition= Vector3.SmoothDamp(transform.localPosition,
@@ -103,7 +109,9 @@ public class SpiderMovement : MonoBehaviour
 
     }
     IEnumerator WaitAndDropChase(){
-        yield return new WaitForSeconds(chaseInterval);
+        yield return new WaitForSeconds(1f);
+        canDie=true;
+        yield return new WaitForSeconds(chaseInterval-1f);
         chase=false;
         //yield return new WaitForSeconds(3f);
         

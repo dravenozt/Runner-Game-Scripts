@@ -7,6 +7,7 @@ using System.Linq;
 
 public class GrapplingGun : MonoBehaviour
 {
+public GameObject player;
 private PlayerMovement pm;
 public Transform point;
 public Transform gunTip;
@@ -96,6 +97,10 @@ private void Update() {
 
     private IEnumerator StartGrappleSequence(){
         //RaycastHit hit;
+        if (GetClosestCeilingAhead()==null)
+        {
+            yield break;
+        }
         grapplePoint=GetClosestCeilingAhead().transform.position;
         if(Vector3.Distance(transform.position,grapplePoint)<25)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
         {
@@ -107,6 +112,12 @@ private void Update() {
 
         
         }
+        else
+    {
+        grapplePoint=point.position + transform.TransformDirection(Vector3.up); //point.forward*maxGrappleDistance;
+        Debug.Log("hocam bişeye tutturamadık valla");
+        Invoke(nameof(StopGrapple),grappleDelayTime);
+    }
 
         
 
