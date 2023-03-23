@@ -36,6 +36,8 @@ public Animation animationController;
 public bool canGrappleJump=false;
 public LayerMask layerMask;
 public GameObject[] allObjects;
+public ParticleSystem auraParticles;
+public ParticleSystem slashParticles;
 
 
 
@@ -49,6 +51,8 @@ private void Start() {
     
     pm=GetComponentInParent<PlayerMovement>();
     GetClosestCeilingAhead();
+    slashParticles.Stop();
+    auraParticles.Stop();
 
     
 }
@@ -104,7 +108,7 @@ private void Update() {
         grapplePoint=GetClosestCeilingAhead().transform.position;
         if(Vector3.Distance(transform.position,grapplePoint)<25)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
         {
-        
+        auraParticles.Play();
         animationController.CrossFade("attack_sword_01");
         yield return new WaitForSeconds(0.2f);
         StartGrapple();
@@ -154,7 +158,7 @@ void StartGrapple(){
 }
 
 void ExecuteGrapple(){
-    
+    auraParticles.Stop();
     canGrappleJump=true;
     //grappling=true;////////////////////////////sonradan ekledim
     Vector3 lowestPoint= new Vector3(transform.position.x,transform.position.y-1f,transform.position.z);//-1f normali
@@ -167,9 +171,10 @@ void ExecuteGrapple(){
         highestPointOnArc=overshootYaxis;
     }
     Vector3 somevector= new Vector3(0,1,0);
-    
+    slashParticles.Play();
     //pm.JumpToPosition(grapplePoint,highestPointOnArc);//grapple pointe atlayacak eskiden buydu
     pm.JumpGrappleCC();
+    pm.canJump=true;
     Invoke(nameof(StopGrapple),0.8f);/////////////////1f idi burası
     
 }
@@ -178,9 +183,12 @@ void StopGrapple(){
     animationController.Blend("tumbling",1f);
     grappling= false;
     grapplingCDtimer=grapplingCD;
+    auraParticles.Stop();
+    
     
     
     //canGrappleJump=false;
+    
     
 
 

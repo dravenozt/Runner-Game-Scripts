@@ -57,6 +57,9 @@ public class PlayerMovement : MonoBehaviour
     bool doGrapple=false;
     bool shakeCamera=false;
     SpiderMovement spiderMovement;
+    public ParticleSystem jumpParticles;
+    Animator starAnimator;
+    
     
     
     
@@ -74,6 +77,8 @@ public class PlayerMovement : MonoBehaviour
     
     void Start()
     {   
+        starAnimator=GameObject.FindGameObjectWithTag("StarUI").GetComponent<Animator>();
+        jumpParticles.Stop();
         
         spiderMovement=spider.GetComponent<SpiderMovement>();
         rb = GetComponent<Rigidbody>();
@@ -140,6 +145,11 @@ public class PlayerMovement : MonoBehaviour
             
             isJumping=false;
             canJump=true;
+            if (!spiderMovement.canDie)
+            {
+                animationController.CrossFade("run@loop");
+            }
+            
         }
         
         if (grapplingGun.canGrappleJump)
@@ -166,11 +176,14 @@ public class PlayerMovement : MonoBehaviour
             {
                 return;
             }
+            
             if (spiderMovement.canDie)
             {
                 StartCoroutine("ShakeCameraAndDie");
                 rb.constraints=RigidbodyConstraints.FreezeAll;
+                
             }
+            
             
             //Debug.Log("yandan veya yukardan temas");
             isSpiderChasing=true;
@@ -425,15 +438,30 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow)&&canJump)
         {
             isJumping= true;
+            
+            canJump=false;
+            
+            
+            
+            
+            
+            
             //JumpCC();
             
             if (grapplingGun.canGrappleJump)
-            {
+            {   
+                jumpParticles.Play();
+                starAnimator.SetBool("canPlay",true);
                 gravity=gravityOffSet-13;
                 canJump=false;
+                spiderMovement.chase=false;
+                
             }
+            
+            
             isChangingLane=false;
             animationController.CrossFade("jump");
+            
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////sonradan ekledik lazımdı denemek için
@@ -789,10 +817,11 @@ public class PlayerMovement : MonoBehaviour
         
         if (isJumping)
         {   
-            
+                
                 controller.Move(Vector3.up*Time.deltaTime*jumpSpeed);
    
         }
+        //canJump=false;////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////burayı açmazsan sonradan
     }
 
 
@@ -825,14 +854,17 @@ public class PlayerMovement : MonoBehaviour
 
    IEnumerator ShakeCameraAndDie(){
     if (!controller.enabled)
-    {
+    {   
+        
         yield break;
+        
     }
     cam.transform.position=new Vector3(cam.transform.position.x+ Random.Range(-0.1f,0.1f),cam.transform.position.y+Random.Range(-0.1f,0.1f),cam.transform.position.z);
     yield return new WaitForSeconds(0.1f);
     animationController.CrossFade("die");
     shakeCamera=false;
     controller.enabled=false;
+    
     
     
    }

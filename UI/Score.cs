@@ -6,20 +6,23 @@ using TMPro;
 public class Score : MonoBehaviour
 {
     public GameObject score;
-    float timePassed;
+    float survivalScore;
     public GameObject player;
+    CharacterController controller;
     private void Start() {
-        timePassed=0;
+        survivalScore=0;
+        controller=player.GetComponent<CharacterController>();
     }
     private void Update() {
 
 
-        if (player.GetComponent<CharacterController>().enabled)
-        {
-            timePassed+=Time.deltaTime;
+        if (controller.enabled)
+        {   
+            survivalScore=Mathf.Ceil(player.transform.position.z/10);
+            //survivalScore+=Time.deltaTime;
         }
         
-        score.GetComponent<TMP_Text>().text= timePassed.ToString("F2");//Time.time.ToString();
+        score.GetComponent<TMP_Text>().text= survivalScore.ToString("F0");//Time.time.ToString();
         
     }
 

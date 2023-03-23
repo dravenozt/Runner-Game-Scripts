@@ -10,7 +10,7 @@ public class SpiderMovement : MonoBehaviour
     Vector3 velocity= Vector3.zero;
     float catchTime;
     public SkinnedMeshRenderer spiderMesh;
-    bool chase=true;
+    public bool chase=true;
     public float chaseInterval;
     public bool canDie=false;
     PlayerMovement pm;
@@ -92,6 +92,7 @@ public class SpiderMovement : MonoBehaviour
             Debug.Log("chase bırakılıyor");
             transform.localPosition= Vector3.SmoothDamp(transform.localPosition,
             spiderBackPos.position,ref velocity,catchTime+3);
+            
         }
 
         if (transform.localPosition.z<-5&&!chase)
