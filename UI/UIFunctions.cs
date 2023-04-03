@@ -65,6 +65,9 @@ public class UIFunctions : MonoBehaviour
         soundOff.SetActive(false);
     }
 
+    public void GoStore(){
+        SceneManager.LoadScene("Store");
+    }
     
 
 

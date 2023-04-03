@@ -6,9 +6,11 @@ public class ScoreAnimHandler : MonoBehaviour
 {   
     public Animator starAnimator;
     Animator scoreAnimator;
+    
     // Start is called before the first frame update
     void Start()
-    {
+    {   
+        
         starAnimator=GameObject.FindGameObjectWithTag("StarUI").GetComponent<Animator>();
         scoreAnimator=GetComponent<Animator>();
     }
@@ -16,9 +18,10 @@ public class ScoreAnimHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        
+       /* 
         if(starAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name=="StarCollectAnim"){
             scoreAnimator.SetBool("canPlayScoreAnim",true);
+            
             
         }
         if (scoreAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name=="ScoreUIAnim")
@@ -28,7 +31,12 @@ public class ScoreAnimHandler : MonoBehaviour
         if(starAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.name=="StarDisabled"){
             scoreAnimator.SetBool("canPlayScoreAnim",false);
             
-        }
+        }*/
         
+        
+    }
+
+    public void StarAnimStop(){
+        starAnimator.SetBool("canPlay",false);
     }
 }

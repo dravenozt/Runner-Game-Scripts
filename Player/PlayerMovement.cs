@@ -59,6 +59,12 @@ public class PlayerMovement : MonoBehaviour
     SpiderMovement spiderMovement;
     public ParticleSystem jumpParticles;
     Animator starAnimator;
+    AudioSource starSound;
+    bool gameover;
+    bool scoreChanged=false;
+    public GameObject generalSettings;
+    public Animator animatorController;
+    
     
     
     
@@ -76,7 +82,8 @@ public class PlayerMovement : MonoBehaviour
     
     
     void Start()
-    {   
+    {   animatorController=GetComponent<Animator>();
+        starSound=GetComponent<AudioSource>();
         starAnimator=GameObject.FindGameObjectWithTag("StarUI").GetComponent<Animator>();
         jumpParticles.Stop();
         
@@ -126,7 +133,12 @@ public class PlayerMovement : MonoBehaviour
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////character controller movement
         
-       
+       //track survival score
+       if (gameover&&!scoreChanged)
+       {
+            variables.survivalScore+=Mathf.CeilToInt(generalSettings.GetComponent<Score>().survivalScore);
+            scoreChanged=true;
+       }
         
         
         //jump - grapple jump
@@ -142,7 +154,8 @@ public class PlayerMovement : MonoBehaviour
             gravity=gravityOffSet;
             velocity.y=gravity;
             grapplingGun.canGrappleJump=false;
-            
+
+            animatorController.SetBool("JumpToRun",true);
             isJumping=false;
             canJump=true;
             if (!spiderMovement.canDie)
@@ -191,10 +204,15 @@ public class PlayerMovement : MonoBehaviour
         }
 
         
-        if (controller.velocity.z<0.5f)
+        if (controller.velocity.z<0.5f||transform.position.x>1||transform.position.x<-1)
         {   
             StartCoroutine("ShakeCameraAndDie");
             rb.constraints=RigidbodyConstraints.FreezeAll;
+            animatorController.SetBool("die",true);
+            
+            gameover=true;
+        
+            
             
             //WhenDieCC();
         }
@@ -440,6 +458,8 @@ public class PlayerMovement : MonoBehaviour
             isJumping= true;
             
             canJump=false;
+            animatorController.SetBool("isJumping",true);
+            
             
             
             
@@ -455,6 +475,7 @@ public class PlayerMovement : MonoBehaviour
                 gravity=gravityOffSet-13;
                 canJump=false;
                 spiderMovement.chase=false;
+                starSound.Play();
                 
             }
             
@@ -468,6 +489,8 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             //grapplingGun.StartGrappleWithAnim();
+            animatorController.SetBool("grapple",true);
+            
             doGrapple=true;
         }
 
@@ -829,7 +852,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (grapplingGun.canGrappleJump)
         {   
-                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed*1.5f);    
+                controller.Move(Vector3.up*Time.deltaTime*jumpSpeed*1.5f);
+                    
             
         }
     }
@@ -850,6 +874,8 @@ public class PlayerMovement : MonoBehaviour
 
    void WhenDieCC(){
         controller.enabled=false;
+        
+        
    }
 
    IEnumerator ShakeCameraAndDie(){
@@ -867,6 +893,21 @@ public class PlayerMovement : MonoBehaviour
     
     
     
+    
+    
    }
+
+    /////////Animation functions
+   public void JumpToRun(){
+    animatorController.SetBool("isJumping",false);
+   }
+
+   public void StopSwordAnim(){
+    animatorController.SetBool("grapple",false);
+   }
+    
+    public void CanRunAnimAfterJump(){
+        animatorController.SetBool("JumpToRun",false);
+    }
     
 }

@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,6 +39,7 @@ public LayerMask layerMask;
 public GameObject[] allObjects;
 public ParticleSystem auraParticles;
 public ParticleSystem slashParticles;
+public AudioSource grappleSound;
 
 
 
@@ -48,7 +50,7 @@ public Collider[] colliders;///////////////////////////////////////sonradan
 
 private void Start() {
     
-    
+    grappleSound= GetComponent<AudioSource>();
     pm=GetComponentInParent<PlayerMovement>();
     GetClosestCeilingAhead();
     slashParticles.Stop();
@@ -145,7 +147,7 @@ void StartGrapple(){
 
         Invoke(nameof(ExecuteGrapple),grappleDelayTime);
         GetClosestCeilingAhead().GetComponent<Collider>().enabled=false;//hit.collider.enabled=false;///////////////////////////////////////////////////////////////////////////////////////////////////////////buraya iyi bakkkkkkkkk
-        
+        grappleSound.Play();
     }
 
     else
@@ -160,6 +162,7 @@ void StartGrapple(){
 void ExecuteGrapple(){
     auraParticles.Stop();
     canGrappleJump=true;
+    
     //grappling=true;////////////////////////////sonradan ekledim
     Vector3 lowestPoint= new Vector3(transform.position.x,transform.position.y-1f,transform.position.z);//-1f normali
 

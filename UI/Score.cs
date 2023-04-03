@@ -6,9 +6,11 @@ using TMPro;
 public class Score : MonoBehaviour
 {
     public GameObject score;
-    float survivalScore;
+    [HideInInspector]public float survivalScore;
     public GameObject player;
     CharacterController controller;
+    
+    
     private void Start() {
         survivalScore=0;
         controller=player.GetComponent<CharacterController>();
@@ -23,6 +25,8 @@ public class Score : MonoBehaviour
         }
         
         score.GetComponent<TMP_Text>().text= survivalScore.ToString("F0");//Time.time.ToString();
+        
+        
         
     }
 
