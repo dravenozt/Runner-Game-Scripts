@@ -14,6 +14,7 @@ public class Variables : ScriptableObject
     public bool hasch04;
     public bool hasch05;
     public int currentCharacterIndex;
+    public bool tutorialPlayed;
     
     
 

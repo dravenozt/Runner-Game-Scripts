@@ -29,7 +29,17 @@ public class UIFunctions : MonoBehaviour
     }
 
     public void StartGame(){
-        SceneManager.LoadScene("Runner");
+        //SceneManager.LoadScene("Runner");
+        
+
+        if (variables.tutorialPlayed)
+        {
+            LoadLevelAsync(1);
+        }
+        else
+        {
+            LoadLevelAsync(3);
+        }
     }
     public void Pause(){
         Time.timeScale=0;
@@ -70,5 +80,16 @@ public class UIFunctions : MonoBehaviour
     }
     
 
+    public void LoadLevelAsync(int sceneIndex){
+        StartCoroutine(LoadAscynchron(sceneIndex));
+    }
+    IEnumerator LoadAscynchron(int sceneIndex){
+        AsyncOperation operation= SceneManager.LoadSceneAsync(sceneIndex);
+        while (!operation.isDone)
+        {
+            Debug.Log(operation.progress);
+            yield return null;
+        }
+    }
 
 }

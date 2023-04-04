@@ -23,7 +23,7 @@ public class ObjectPooler : MonoBehaviour
 
     #endregion
 
-    public InfiniteMap infiniteMap;
+    public InfiniteMap infiniteMap; 
 
     //list of pools 
     public List<Pool> pools;
@@ -31,7 +31,7 @@ public class ObjectPooler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {   
-        infiniteMap= InfiniteMap.Instance;
+        infiniteMap=InfiniteMap.Instance;
 
 
         pooldictionary= new Dictionary<string, Queue<GameObject>>();

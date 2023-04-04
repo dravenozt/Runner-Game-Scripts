@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class InfiniteMap : MonoBehaviour
+public class Tutorial_InfiniteMap : MonoBehaviour
 {
 
     public GameObject player;
@@ -33,7 +33,7 @@ public class InfiniteMap : MonoBehaviour
 
     // Update is called once per frame
 
-    public static InfiniteMap Instance;
+    public static Tutorial_InfiniteMap Instance;
 
     private void Awake() {
         Instance= this;
@@ -47,15 +47,7 @@ public class InfiniteMap : MonoBehaviour
         
         locTile1=Vector3.zero;
         objectPooler= ObjectPooler.Instance;
-
-        if (!variables.tutorialPlayed)
-        {
-            locEmptyObject = new Vector3(0, 0, 60); /////////////Empty objects starts little bit far
-        }
-        else{
-            locEmptyObject = new Vector3(0, 0, 60);
-        }
-        
+        locEmptyObject = new Vector3(0, 0, 60); /////////////Empty objects starts little bit far
         locPlane=Vector3.zero+ Vector3.down/2;
         locRightLantern=Vector3.zero+ Vector3.forward*16f;
         
@@ -94,11 +86,15 @@ public class InfiniteMap : MonoBehaviour
         SpawnPlane();
         SpawnPlane();
 
+        /*
+        SpawnObstacle();
+        SpawnObstacle();
+        SpawnObstacle();
+        SpawnObstacle();
 
-        //tutorial oynanmadıysa
-        if (!variables.tutorialPlayed)
-        {
-                    //Teach swipe left-right
+        */
+
+        //Teach swipe left-right
         objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
         locEmptyObject+=Vector3.forward*30;
         
@@ -133,24 +129,6 @@ public class InfiniteMap : MonoBehaviour
         objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
         locEmptyObject+=Vector3.forward*45;
 
-        objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-        locEmptyObject+=Vector3.forward*45;
-
-        objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-        locEmptyObject+=Vector3.forward*45;
-
-        objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-        locEmptyObject+=Vector3.forward*45;
-        }
-
-        else
-        {
-            SpawnObstacle();
-            SpawnObstacle();
-            SpawnObstacle();
-            SpawnObstacle();
-        }
-        
 
     }
 
@@ -181,13 +159,13 @@ public class InfiniteMap : MonoBehaviour
         {
             SpawnPlane();
         }
-
-        //Spawn
+        /*
+        //Spawn Obstacles
         if (Vector3.Distance(player.transform.position,locEmptyObject)<100f)
         {
             SpawnObstacle();
         }
-
+    */
         
 
 
