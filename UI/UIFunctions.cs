@@ -12,6 +12,7 @@ public class UIFunctions : MonoBehaviour
     public GameObject soundOff;
     public Variables variables;
     int isSoundEnabled=1;//1 => true, 0 => false
+    
 
 
     private void Start() {
@@ -22,15 +23,19 @@ public class UIFunctions : MonoBehaviour
         //soundOn.SetActive(variables.isSoundEnabled);
         //soundOff.SetActive(!variables.isSoundEnabled);
         
+        
         if (isSoundEnabled==0)
         {
-            soundOn.SetActive(true);
-            soundOff.SetActive(false);
+            soundOn.SetActive(false);
+            soundOff.SetActive(true);//sound off button is active cuz sound is off
+            AudioListener.pause=true;
+
         }
         else
         {
-            soundOn.SetActive(false);
-            soundOff.SetActive(true);
+            soundOn.SetActive(true);//sound on button is active cuz sound is on
+            soundOff.SetActive(false);
+            AudioListener.pause=false;
         }
         
     }
@@ -40,14 +45,17 @@ public class UIFunctions : MonoBehaviour
 
         Debug.Log("issound enabled değeri: " + isSoundEnabled);
 
+        /*
         if (isSoundEnabled==1)
         {
-          cam.GetComponent<AudioListener>().enabled=true;  
+          //cam.GetComponent<AudioListener>().enabled=true;,
+          AudioListener.pause=false;  
         }
 
         else{
-            cam.GetComponent<AudioListener>().enabled=false;
-        }
+            //cam.GetComponent<AudioListener>().enabled=false;
+
+        }*/
     }
 
     public void Restart(){
@@ -86,29 +94,31 @@ public class UIFunctions : MonoBehaviour
     }
 
 
-    //tıkladın sesi açtı
+    //if you click this it will pause the sound
     public void SoundOn(){
         //variables.isSoundEnabled=false;
-        cam.GetComponent<AudioListener>().enabled=false;
+        //cam.GetComponent<AudioListener>().=false;
         soundOff.SetActive(true);
         soundOn.SetActive(false);
 
         variables.SavePlayer();//////////////////////////////////////////////////////////////////////////////////////////
-        PlayerPrefs.SetInt(nameof(isSoundEnabled),1);
+        PlayerPrefs.SetInt(nameof(isSoundEnabled),0);
         isSoundEnabled=PlayerPrefs.GetInt(nameof(isSoundEnabled));
+        AudioListener.pause=true;
         
     }
 
-    //tıkladın sesi kapadı
+    //if you click this it will unpause the sound
     public void SoundOff(){
         //variables.isSoundEnabled=true;
-        cam.GetComponent<AudioListener>().enabled=true;
+        //cam.GetComponent<AudioListener>().enabled=true;
         soundOn.SetActive(true);
         soundOff.SetActive(false);
 
         variables.SavePlayer();////////////////////////////////////////////////////////////////////////////////////////////////
-        PlayerPrefs.SetInt(nameof(isSoundEnabled),0);
+        PlayerPrefs.SetInt(nameof(isSoundEnabled),1);
         isSoundEnabled=PlayerPrefs.GetInt(nameof(isSoundEnabled));
+        AudioListener.pause=false;
     }
 
     public void GoStore(){
