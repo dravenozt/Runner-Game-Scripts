@@ -18,6 +18,7 @@ public LineRenderer lineRenderer;
 
 public float maxGrappleDistance;
 public float grappleDelayTime;
+public float grappableDistance;
 
 private Vector3 grapplePoint;
 
@@ -108,7 +109,7 @@ private void Update() {
             yield break;
         }
         grapplePoint=GetClosestCeilingAhead().transform.position;
-        if(Vector3.Distance(transform.position,grapplePoint)<25)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
+        if(Vector3.Distance(transform.position,grapplePoint)<grappableDistance)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))
         {
         auraParticles.Play();
         animationController.CrossFade("attack_sword_01");
@@ -141,7 +142,7 @@ void StartGrapple(){
 
     //RaycastHit hit;
 
-    if(Vector3.Distance(transform.position,grapplePoint)<25)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))// transform.TransformDirection(Vector3.up) eskiden direction buydu
+    if(Vector3.Distance(transform.position,grapplePoint)<grappableDistance)//if(colliders.Length>0)//if (Physics.Raycast(point.position,GetDirection() ,out hit,maxGrappleDistance,whatIsGrappable))// transform.TransformDirection(Vector3.up) eskiden direction buydu
     {
         grapplePoint=GetClosestCeilingAhead().transform.position;//colliders[0].gameObject.transform.position; //hit.point;
 

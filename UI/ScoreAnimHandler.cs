@@ -6,7 +6,7 @@ public class ScoreAnimHandler : MonoBehaviour
 {   
     public Animator starAnimator;
     Animator scoreAnimator;
-    
+    public GameObject generalSettings;
     // Start is called before the first frame update
     void Start()
     {   
@@ -38,5 +38,9 @@ public class ScoreAnimHandler : MonoBehaviour
 
     public void StarAnimStop(){
         starAnimator.SetBool("canPlay",false);
+    }
+
+    public void StarPoints(){
+        generalSettings.GetComponent<Score>().starReferencePoints+=20;
     }
 }

@@ -9,19 +9,27 @@ public class Score : MonoBehaviour
     [HideInInspector]public float survivalScore;
     public GameObject player;
     CharacterController controller;
+    public Animator starAnimator;
+    public float starReferencePoints=0;
     
     
     private void Start() {
         survivalScore=0;
         controller=player.GetComponent<CharacterController>();
+        starAnimator=GameObject.FindGameObjectWithTag("StarUI").GetComponent<Animator>();
     }
     private void Update() {
 
 
         if (controller.enabled)
         {   
-            survivalScore=Mathf.Ceil(player.transform.position.z/10);
+
+
+            //olmuyo çünkü sürekli player transforma kayıyosun
+            survivalScore=Mathf.Ceil(player.transform.position.z/10)+starReferencePoints;
             //survivalScore+=Time.deltaTime;
+
+            
         }
         
         score.GetComponent<TMP_Text>().text= survivalScore.ToString("F0");//Time.time.ToString();

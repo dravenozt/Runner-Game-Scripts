@@ -11,17 +11,43 @@ public class UIFunctions : MonoBehaviour
     public GameObject soundOn;
     public GameObject soundOff;
     public Variables variables;
+    int isSoundEnabled=1;//1 => true, 0 => false
 
 
     private void Start() {
-        soundOn.SetActive(variables.isSoundEnabled);
-        soundOff.SetActive(!variables.isSoundEnabled);
         
+        variables.LoadPlayer();/////////////////////////////////////////////////// buraya bakkkkkk loadluyoruz
+        
+        isSoundEnabled=PlayerPrefs.GetInt(nameof(isSoundEnabled));
+        //soundOn.SetActive(variables.isSoundEnabled);
+        //soundOff.SetActive(!variables.isSoundEnabled);
+        
+        if (isSoundEnabled==0)
+        {
+            soundOn.SetActive(true);
+            soundOff.SetActive(false);
+        }
+        else
+        {
+            soundOn.SetActive(false);
+            soundOff.SetActive(true);
+        }
         
     }
 
     private void Update() {
-        cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
+        //cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
+
+        Debug.Log("issound enabled değeri: " + isSoundEnabled);
+
+        if (isSoundEnabled==1)
+        {
+          cam.GetComponent<AudioListener>().enabled=true;  
+        }
+
+        else{
+            cam.GetComponent<AudioListener>().enabled=false;
+        }
     }
 
     public void Restart(){
@@ -60,19 +86,29 @@ public class UIFunctions : MonoBehaviour
     }
 
 
+    //tıkladın sesi açtı
     public void SoundOn(){
-        variables.isSoundEnabled=false;
-        //cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
+        //variables.isSoundEnabled=false;
+        cam.GetComponent<AudioListener>().enabled=false;
         soundOff.SetActive(true);
         soundOn.SetActive(false);
+
+        variables.SavePlayer();//////////////////////////////////////////////////////////////////////////////////////////
+        PlayerPrefs.SetInt(nameof(isSoundEnabled),1);
+        isSoundEnabled=PlayerPrefs.GetInt(nameof(isSoundEnabled));
         
     }
 
+    //tıkladın sesi kapadı
     public void SoundOff(){
-        variables.isSoundEnabled=true;
-        //cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
+        //variables.isSoundEnabled=true;
+        cam.GetComponent<AudioListener>().enabled=true;
         soundOn.SetActive(true);
         soundOff.SetActive(false);
+
+        variables.SavePlayer();////////////////////////////////////////////////////////////////////////////////////////////////
+        PlayerPrefs.SetInt(nameof(isSoundEnabled),0);
+        isSoundEnabled=PlayerPrefs.GetInt(nameof(isSoundEnabled));
     }
 
     public void GoStore(){

@@ -13,7 +13,7 @@ public class ShopUI : MonoBehaviour
     
     void Start()
     {
-        
+        variables.LoadPlayer();
     }
 
     // Update is called once per frame
@@ -39,6 +39,8 @@ public class ShopUI : MonoBehaviour
                 default:break;
             }
             BuyButton.SetActive(false);
+
+            variables.SavePlayer();
         }
     }
     public void RightCharacter(){
@@ -48,11 +50,13 @@ public class ShopUI : MonoBehaviour
         if (characterIndex<4)
         {
             characterIndex+=1;
+            variables.SavePlayer();
         }
 
         else
         {
             characterIndex=0;
+            variables.SavePlayer();
         }
     }
     public void LeftCharacter(){
@@ -61,13 +65,16 @@ public class ShopUI : MonoBehaviour
         if (characterIndex>0)
         {
             characterIndex-=1;
+            variables.SavePlayer();
         }
         else
         {
             characterIndex=4;
+            variables.SavePlayer();
         }
     }
     public void GoHome(){
+        variables.SavePlayer();
         SceneManager.LoadScene("MainMenu");
     }
 }

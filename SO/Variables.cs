@@ -15,6 +15,30 @@ public class Variables : ScriptableObject
     public bool hasch05;
     public int currentCharacterIndex;
     public bool tutorialPlayed;
+
+
+    public void SavePlayer(){
+        SaveSystem.SavePlayer(this);
+
+    }
+
+
+    public void LoadPlayer(){
+        PlayerData data= SaveSystem.LoadPlayer();
+
+        isSoundEnabled= data.isSoundEnabled;
+        survivalScore= data.survivalScore;
+
+        hasch01= data.hasch01;
+        hasch02=data.hasch02;
+        hasch03=data.hasch03;
+        hasch04= data.hasch04;
+        hasch05= data.hasch05;
+
+        currentCharacterIndex= data.currentCharacterIndex;
+
+        tutorialPlayed=data.tutorialPlayed;
+    }
     
     
 

@@ -64,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
     bool scoreChanged=false;
     public GameObject generalSettings;
     public Animator animatorController;
+    public float starPoint;
     
     
     
@@ -94,6 +95,9 @@ public class PlayerMovement : MonoBehaviour
         zPos= rb.position.z;
         cam.GetComponent<AudioListener>().enabled=variables.isSoundEnabled;
         controller=GetComponent<CharacterController>();
+
+
+        variables.LoadPlayer();
         
     }
 
@@ -101,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {   
         
-        
+        //Debug.Log(generalSettings.GetComponent<Score>().survivalScore);
         //Debug.Log(rb.velocity.z);
         if (activeGrapple)
         {
@@ -209,6 +213,8 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine("ShakeCameraAndDie");
             rb.constraints=RigidbodyConstraints.FreezeAll;
             animatorController.SetBool("die",true);
+
+            variables.SavePlayer();//////////////////////////////////////////////////////////////////////////buraya bak datayı kaydediyoruz
             
             gameover=true;
         
@@ -353,13 +359,18 @@ public class PlayerMovement : MonoBehaviour
                     
                     
                 }
+                
 
                 //grapple
                 if (startposition.y>endposition.y&&(startposition.y-endposition.y>endposition.x-startposition.x)&&(startposition.y-endposition.y>startposition.x -endposition.x)&&canSwipe)
                 {   
-                    Debug.Log("valla ben grapple tuşuna bastım");
-                    grapplingGun.StartGrappleWithAnim();
+                    /*Debug.Log("valla ben grapple tuşuna bastım");
+                    grapplingGun.StartGrappleWithAnim();*/
                     canSwipe=false;
+
+                    animatorController.SetBool("grapple",true);
+            
+                    doGrapple=true;
                     
                     
                 }
@@ -367,12 +378,41 @@ public class PlayerMovement : MonoBehaviour
                 //jump
                 if (endposition.y>startposition.y&&(endposition.y-startposition.y>endposition.x-startposition.x)&&(endposition.y-startposition.y>startposition.x -endposition.x)&&canSwipe&&canJump)
                 {
-                isJumping= true;
+                /*isJumping= true;
                 
                 isChangingLane=false;
                 animationController.CrossFade("jump");
                 canSwipe=false;
-                
+                */
+                            isJumping= true;
+            
+                    canJump=false;
+                    animatorController.SetBool("isJumping",true);
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    //JumpCC();
+                    
+                    if (grapplingGun.canGrappleJump)
+                    {   
+                        
+                        jumpParticles.Play();
+                        starAnimator.SetBool("canPlay",true);
+                        gravity=gravityOffSet-13;
+                        canJump=false;
+                        spiderMovement.chase=false;
+                        starSound.Play();
+                        //////////////////////grappledan sonra zınklatınca bi puan////////////////////////////////////////////
+                        
+                    }
+                    
+                    
+                    isChangingLane=false;
+                    animationController.CrossFade("jump");
                 
                 
                 
@@ -470,12 +510,15 @@ public class PlayerMovement : MonoBehaviour
             
             if (grapplingGun.canGrappleJump)
             {   
+                
                 jumpParticles.Play();
                 starAnimator.SetBool("canPlay",true);
                 gravity=gravityOffSet-13;
                 canJump=false;
                 spiderMovement.chase=false;
                 starSound.Play();
+                
+
                 
             }
             
@@ -909,5 +952,7 @@ public class PlayerMovement : MonoBehaviour
     public void CanRunAnimAfterJump(){
         animatorController.SetBool("JumpToRun",false);
     }
+
+    
     
 }

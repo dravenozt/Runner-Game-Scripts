@@ -28,6 +28,7 @@ public class InfiniteMap : MonoBehaviour
     int oldInt;
     int newInt;
     public Variables variables;
+    public float objectDistance;
     
     
 
@@ -221,154 +222,154 @@ public class InfiniteMap : MonoBehaviour
             //barrels
             case 6: 
             objectPooler.SpawnFromPool("barrels",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
             
             //barrier
             case 7: 
             objectPooler.SpawnFromPool("barrier",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
             
             //buyukagac2
             case 8: 
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //buyukagac
             case 9: 
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //cart
             case 10: 
             objectPooler.SpawnFromPool("cart",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //coffin
             case 11: 
             objectPooler.SpawnFromPool("coffin",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //emtree
             case 12: 
             objectPooler.SpawnFromPool("emtree",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //hooktree
             case 13: 
             objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //ltasobegi
             case 14: 
             objectPooler.SpawnFromPool("ltasobegi",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //mezar
             case 15: 
             objectPooler.SpawnFromPool("mezar",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //pillars
             case 16: 
             objectPooler.SpawnFromPool("pillars",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //rock1
             case 17: 
             objectPooler.SpawnFromPool("rock1",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //rock2
             case 18: 
             objectPooler.SpawnFromPool("rock2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //tasnojump
             case 19: 
             objectPooler.SpawnFromPool("tasnojump",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
             //tree comb 1
             case 20: 
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             break;
 
             //tree comb 2
             case 21: 
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             break;
 
             //tree-pillar-tree combinations(1)
             case 22: 
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
 
             objectPooler.SpawnFromPool("pillars",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             break;
 
             //tree-pillar-tree combinations(2)
             case 23: 
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
 
             objectPooler.SpawnFromPool("pillars",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             break;
             
             //increase the chances hooktree spawn
             case 24: 
             objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;       
+            locEmptyObject+=Vector3.forward*objectDistance;;break;       
             
 
             //hooktree - trees combinations(1)
             case 25: 
             objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
 
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             break;
 
             //hooktree - trees combinations(2)
             case 26: 
             objectPooler.SpawnFromPool("hooktree",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
 
             objectPooler.SpawnFromPool("buyukagac2",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             
             objectPooler.SpawnFromPool("buyukagac",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;
+            locEmptyObject+=Vector3.forward*objectDistance;
             break;
 
             //increase barrels
             case 27: 
             objectPooler.SpawnFromPool("barrels",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
             
             //increase barrier
             case 28: 
             objectPooler.SpawnFromPool("barrier",locEmptyObject,Quaternion.identity); 
-            locEmptyObject+=Vector3.forward*15;;break;
+            locEmptyObject+=Vector3.forward*objectDistance;;break;
 
 
             
